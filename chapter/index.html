@@ -19,6 +19,7 @@
    <link rel="stylesheet" media="screen and (max-device-width: 999px)" href="tinleyhand.css" />
    <link rel="stylesheet" media="screen and (min-device-width: 1000px)" href="tinley.css" />
    <link href="http://fonts.googleapis.com/css?family=Lily+Script+One" rel="stylesheet" type="text/css">
+   <script src="js01b.js" defer></script>
 </head>
 
 <body>
@@ -43,9 +44,9 @@
         
       <aside>
          <ul>
-            <li id="blanket">Blanket Flower</li>
-            <li id="rugosa">Hedge Rose</li>
-            <li id="bluestem">Little Bluestem</li>
+            <li id="blanket" onclick="document.getElementById('plantImg').src = blanket">Blanket Flower</li>
+            <li id="rugosa" onclick="document.getElementById('plantImg').src = rugosa">Hedge Rose</li>
+            <li id="bluestem" onclick="document.getElementById('plantImg').src = bluestem">Little Bluestem</li>
          </ul>
       </aside>
     
@@ -62,7 +63,7 @@
                   document.write("<a href='http:planthardiness.ars.usda.gov'>");
                   document.write("hardiness zones</a>");
                   document.write(" 5a - 6b </p>"); // hardiness zones for Chicago and surrounding area
-                  
+
                   //define variables containing plant file names
                   let blanket = "blanket.jpg";
                   let bluestem = "bluestem.jpg";

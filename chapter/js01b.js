@@ -30,9 +30,4 @@ document.getElementById("bluestem").onclick = function() {
    including link to USDA website
 */
 
-let captionText = "<p>Plant choices for " +
-                  "<a href='http://planthardiness.ars.usda.gov'>" +
-                  "hardiness zones</a>" +
-                  " 5a - 6b </p>";
-
-document.getElementById("imgCaption").innerHTML = captionText;
+document.getElementById("imgCaption").innerHTML = "<p>Plant choices for <a href='http://planthardiness.ars.usda.gov'>hardiness zones</a> 5a - 6b </p>";
