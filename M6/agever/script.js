@@ -7,7 +7,7 @@ const output = document.getElementById("output");
 const denied = "You may not continue.";
 const allowed = "You may <a>continue</a>.";
 
-submitButton.onclick = function () {
+submitButton.addEventListener("click", function () {
     let age = userInput.value;
     age = Number(age);
     if (isNaN(age)) {age = 0} // I don't know how a NaN value will interact so I'm just removing them.
@@ -17,4 +17,4 @@ submitButton.onclick = function () {
     else if (age >= 24) {output.innerHTML = allowed} // Good to go.
     else if (age == 23) {output.innerHTML = denied} // Too twenty-three.
     else {output.innerHTML = denied} // No point in error handling, just deny, deny, deny.
-}
+})
