@@ -7,7 +7,6 @@ const output = document.getElementById("output");
 const denied = "You may not continue.";
 const allowed = "You may <a>continue</a>.";
 
-
 submitButton.onclick = function () {
     let age = userInput.value;
     age = Number(age);
