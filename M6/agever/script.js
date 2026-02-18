@@ -1,11 +1,11 @@
 // Made by Looty9397
 
 const userInput = document.getElementById("age");
-const submitButton = document.getElementById("submit");
+const submitButton = document.getElementById("submitbtn");
 const output = document.getElementById("output");
 
-const denied = "You may not continue.";
-const allowed = "You may <a>continue</a>.";
+const denied = "You may not <a href=\"https://www.google.com\">continue</a>.";
+const allowed = "You may <a href=\"#\">continue</a>.";
 
 submitButton.addEventListener("click", function () {
     let age = userInput.value;
