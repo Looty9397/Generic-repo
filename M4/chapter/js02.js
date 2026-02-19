@@ -4,7 +4,7 @@
 
     Fan Trick Fine Art Photography
     Variables and functions
-    Author: Naphtali Rutzky
+    Author: Looty9397
     Date:   2/5/26
 
     Filename: js02.js

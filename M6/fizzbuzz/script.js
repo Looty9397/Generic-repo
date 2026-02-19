@@ -7,13 +7,17 @@
 // for elements I plan to modify. I can use the document.getElementById() statement directly in the code.
 // It will work. It is readable. It is not "clever".)
 
+// I have opted to not use constants for one reason: They are annoying. They add an extra step in between the value
+// of the object and the output. This means that I often have to check for errors in both the constant declaration line
+// and whenever I use the constant. I keep my ids sensible, so the code using no constants is still readable.
+
 document.getElementById("inputs").addEventListener("submit", function (event) {
     event.preventDefault();
-    num = Number(document.getElementById("num").value);
+    var num = Number(document.getElementById("num").value);
     if (!isNaN(num)) {
         out = (num % 3 == 0) ? "Fizz" : ""; // To avoid a large if else block.
         out += (num % 5 == 0) ? "Buzz" : ""; // ^^
         out = (out === "") ? num : out; // else condition
     }
     document.getElementById("output").innerHTML = out;
-})
+});
