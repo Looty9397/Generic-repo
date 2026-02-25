@@ -1,0 +1,25 @@
+body {
+    font-family: Consolas, "Courier New", monospace;
+    font-weight: bold;
+}
+
+.grandparent {
+    border: 2px solid black;
+    padding: 20px;
+    width: 500px;
+    margin: 20px auto;
+    position: relative; 
+}
+
+.parent {
+    border: 2px solid black;
+    padding: 10px;
+    margin: 10px;
+    position: relative;
+}
+
+.child {
+    border: 2px solid black;
+    padding: 5px;
+    margin: 5px;
+}

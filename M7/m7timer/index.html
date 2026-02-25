@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="script.js" defer></script>
+    <style>
+        body {
+            font-family: Consolas, 'Courier New', monospace;
+            font-weight: bold;
+            background-color: white;
+        }
+
+        .bordered {
+            border-width: 2px;
+            border-color: black;
+            border-style: solid;
+            padding-left: 16px;
+            padding-bottom: 16px;
+            padding-right: 16px;
+            width: fit-content;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="font-weight: bold;">DOM "Timer" (it's a stopwatch)</h1>
+    <div class="bordered">
+        <p id="time">0</p>
+        <button id="start">START</button>
+        <button id="stop">STOP</button>
+        <button id="reset">RESET</button>
+    </div>
+</body>
+</html>
