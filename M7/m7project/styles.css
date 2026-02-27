@@ -1,0 +1,55 @@
+/* Written by Looty9397. Never by AI. */
+
+body {
+    font-family: Consolas, 'Courier New', Courier, monospace;
+    color: black;
+    text-align: center;
+    background-color: white;
+    font-weight: bold;
+    border-color: black;
+}
+
+h1 {
+    font-size: 64px;
+}
+
+img {
+    border-style: solid;
+    border-width: 2px;
+    width: 750px;
+    transition-duration: 0.5s;
+}
+
+figcaption, p, span {
+    font-size: 24px;
+}
+
+.btn {
+    border-style: solid;
+    border-width: 2px;
+    background-color: inherit;
+    font-weight: bold;
+    font-family: inherit;
+    transition-duration: 0.5s;
+    font-size: 18px;
+}
+
+.btn:hover {
+    background-color: black;
+    color: white;
+
+}
+
+.btndisable {
+    border-style: solid;
+    border-width: 2px;
+    background-color: #bbbbbb;
+    font-weight: bold;
+    font-family: inherit;
+    transition-duration: 0.5s;
+    font-size: 18px;
+}
+
+.hidden {
+    display: none;
+}
