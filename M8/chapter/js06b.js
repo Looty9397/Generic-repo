@@ -81,7 +81,6 @@ function validateCVC () {
    }
 }
 
-
 /* ------- Luhn Algorithm used for Validating Credit Card Numbers   ----- */
 
 function luhn(idNum) {
