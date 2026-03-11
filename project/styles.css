@@ -9,3 +9,8 @@ img {
     width: 500px;
     filter: none;
 }
+
+button {
+    display: none;
+    transition-duration: 0.5s;
+}
