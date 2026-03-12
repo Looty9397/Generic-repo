@@ -91,13 +91,13 @@ const text = {
 const imageFiles = { // "ID": ["FILE", CHOICENUM, ["OPTS"]] || "O" = 1, "T" = 2, "H" = 3
     "NORMAL": ["ONF", "ONR", "ONL", "TNFR", "TNFL", "TNRL", "HNFRL"],
     "EVENT": ["OEF", "TEFR", "TEFL"],
-    "ONF": ["1NF", 1, ["F"]],
-    "ONR": ["1NR", 1, ["R"]],
-    "ONL": ["1NL", 1, ["L"]],
-    "TNFR": ["2NFR", 2, ["F", "R"]],
-    "TNFL": ["2NFL", 2, ["F", "L"]],
-    "TNRL": ["2NRL", 2, ["R", "L"]],
-    "HNFRL": ["3NFRL", 3, ["F", "R", "L"]],
+    "ONF": ["1NF", 1, ["F"]],//
+    "ONR": ["1NR", 1, ["R"]],//
+    "ONL": ["1NL", 1, ["L"]],//
+    "TNFR": ["2NFR", 2, ["F", "R"]],//
+    "TNFL": ["2NFL", 2, ["F", "L"]],//
+    "TNRL": ["2NRL", 2, ["R", "L"]],//
+    "HNFRL": ["3NFRL", 3, ["F", "R", "L"]],//
     "OEF": ["1EF", 1, ["E"]],
     "TEFR": ["2EFR", 2, ["E", "R"]],
     "TEFL": ["2EFL", 2, ["E", "L"]],
@@ -134,7 +134,7 @@ function buildText () {
 // Place the image onto the webpage
 function buildImage () {
     if (Math.random() < Math.sqrt(time)) {
-        image.src = imageFiles[choose(imageFiles.EVENT)] + (Math.round(Math.random()) + 1) + ".png";
+        image.src = imageFiles[choose(imageFiles.EVENT)] + ".png";
     } else {
         image.src = imageFiles[choose(imageFiles.NORMAL)] + (Math.round(Math.random()) + 1) + ".png";
     }
