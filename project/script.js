@@ -11,7 +11,7 @@ const buttons = { // Names are self-explanatory except for "break" which is take
 }
 
 // Prepare for webpage interaction and set up the game counters
-var time = 0; var insanity = 0; var exhaustion = 0; var currentEvent = 0; var currentImage = "";
+var time = 0; var insanity = 0; var exhaustion = 0; var currentEvent = 0; var currentImage = ""; var stage = 0;
 const main = document.getElementById("main");
 const extra = document.getElementById("extra");
 const special = document.getElementById("special");
@@ -72,13 +72,25 @@ const text = {
                 "The voice in your head tells you to stop, and you obey."
             ]
         },
-        "event": []
+        "event": {
+            "discover": [
+                "You see an odd structure up ahead.",
+                "An ancient building lays in the road.",
+            ],
+            "entered": [
+                "Inside the building you see numerous inscriptions.",
+                "You cannot read the text, but something feels familiar.",
+                "You suddenly feel very drowsy, and close your eyes.",
+                "You wake up with a headache, at the beginning of the path.",
+                "It must've all been a dream."
+            ]
+        }
     },
     "choices": {
         "start": [
             "Ahead, you notice ",
             "Before you lies ",
-            "Ahead, there is/are",
+            "Ahead, there is/are ",
         ],
         "end": [
             "one option.",
@@ -89,24 +101,25 @@ const text = {
 }
 
 const imageFiles = { // "ID": ["FILE", CHOICENUM, ["OPTS"]] || "O" = 1, "T" = 2, "H" = 3
-    "NORMAL": ["ONF", "ONR", "ONL", "TNFR", "TNFL", "TNRL", "HNFRL"],
+    "NORMAL": ["ONF", "ONR", "ONL", "TNFR", "TNFL", "TNRL", "HNFRL"],//
     "EVENT": ["OEF", "TEFR", "TEFL"],
-    "ONF": ["1NF", 1, ["F"]],//
-    "ONR": ["1NR", 1, ["R"]],//
-    "ONL": ["1NL", 1, ["L"]],//
-    "TNFR": ["2NFR", 2, ["F", "R"]],//
-    "TNFL": ["2NFL", 2, ["F", "L"]],//
-    "TNRL": ["2NRL", 2, ["R", "L"]],//
-    "HNFRL": ["3NFRL", 3, ["F", "R", "L"]],//
-    "OEF": ["1EF", 1, ["E"]],
-    "TEFR": ["2EFR", 2, ["E", "R"]],
-    "TEFL": ["2EFL", 2, ["E", "L"]],
-    "OS": ["1S", 1, ["F"]]
+    "ONF": {"name": "images/1NF", "count": 1, "choices": ["F"]},//
+    "ONR": {"name": "images/1NR", "count": 1, "choices": ["R"]},//
+    "ONL": {"name": "images/1NL", "count": 1, "choices": ["L"]},//
+    "TNFR": {"name": "images/2NFR", "count": 2, "choices": ["F", "R"]},//
+    "TNFL": {"name": "images/2NFL", "count": 2, "choices": ["F", "L"]},//
+    "TNRL": {"name": "images/2NRL", "count": 2, "choices": ["R", "L"]},//
+    "HNFRL": {"name": "images/3NFRL", "count": 3, "choices": ["F", "R", "L"]},//
+    "OEF": {"name": "images/1EF", "count": 1, "choices": ["E"]},
+    "TEFR": {"name": "images/2EFR", "count": 2, "choices": ["E", "R"]},
+    "TEFL": {"name": "images/2EFL", "count": 2, "choices": ["E", "L"]},
+    "BEF": {"name": "images/BEF", "count": 1, "choices": ["F"]},
+    "OS": {"name": "images/1S", "count": 1, "choices": ["F"]}//
 };
 
 // Place the text onto the webpage
 function buildText () {
-    main.innerHTML = choose(text.main.start) + choose(text.main.end);
+    main.innerHTML = choose(text.main);
     if (Math.random() < 0.25) {
         extra.innerHTML = choose(text.extra);
     } else {
@@ -117,32 +130,66 @@ function buildText () {
         currentEvent += 1; // Same result, probability curve go wonky though.
     } else if (time >= 34 && roll < (-1 * (0.2 * (1.1 ** (-1 *(time - 67.5)))) + 5)) {
         currentEvent += 1;
-    } else if (roll < 5 * Math.sqrt(time)) {
+    }
+    roll = Math.random() * 100;
+    if (roll < 5 * Math.sqrt(time)) {
         currentEvent += 2;
     }
     if (currentEvent === 3) { // 1 = insanity; 2 = exhaustion; 3 = 50/50 for either
-        currentEvent = Math.round(Math.random()) + 1
+        currentEvent = Math.floor(Math.random()) + 1
     }
     switch (currentEvent) {
         default: special.innerHTML = ""; break;
         case 1: special.innerHTML = choose(text.insanity); insanity += 1; break;
         case 2: special.innerHTML = choose(text.exhaustion); exhaustion += 1; break;
     }
-    choices.innerHTML = choose(text.choices.start) + text.choices.end[imageFiles[currentImage][1]];
+    console.log(text.choices.end[imageFiles[currentImage].count - 1]);
+    console.log(imageFiles[currentImage].count - 1);
+    console.log(currentImage)
+    choices.innerHTML = choose(text.choices.start) + text.choices.end[imageFiles[currentImage].count - 1];
+}
+
+function buildEventText () {
+    if (currentImage[0] === "O" || currentImage[0] === "T") {
+        main.innerHTML = choose(text.event.discover);
+        choices.innerHTML = choose(text.choices.start) + text.choices.end[imageFiles[currentImage].count];
+        buttons.forward.innerHTML = "Enter";
+    } else if (currentImage[0] === "B") {
+        if (stage <= text.event.entered.length) {
+            main.innerHTML = text.event.entered[stage];
+            stage += 1;
+            buttons.forward.innerHTML = "Continue";
+        } else {
+            location.reload();
+        }
+    }
 }
 
 // Place the image onto the webpage
 function buildImage () {
-    if (Math.random() < Math.sqrt(time)) {
-        image.src = imageFiles[choose(imageFiles.EVENT)] + ".png";
+    if (stage > 0) {
+        image.src = imageFiles.BEF.name;
+        currentImage = "BEF";
+        if (stage > 3) {
+            image.src = imageFiles.OS.name;
+            currentImage = "OS";
+        }
+    } else if (Math.random() < Math.sqrt(time)) {
+        console.log("event");
+        let imageChosen = choose(imageFiles.EVENT);
+        image.src = imageFiles[imageChosen].name + ".png";
+        currentImage = imageChosen;
     } else {
-        image.src = imageFiles[choose(imageFiles.NORMAL)] + (Math.round(Math.random()) + 1) + ".png";
+        let imageChosen = choose(imageFiles.NORMAL);
+        image.src = imageFiles[imageChosen].name + (Math.floor(Math.random()) + 1) + ".png";
+        currentImage = imageChosen;
     }
-    image.style.filter = "blur(" + (Math.random() * exhaustion / 5) + ") invert(" + (Math.random() * insanity / 100) + ")";
+    image.style.filter = "blur(" + (Math.random() * (exhaustion / 5)) + ") invert(" + (Math.random() * (insanity / 20)) + ")";
 }
 
 function choose (list) {
-    return list[Math.round(Math.random() * list.length)];
+    let output = list[Math.floor(Math.random() * list.length)];
+    return output;
 }
 
 function createScene () {
@@ -151,15 +198,17 @@ function createScene () {
 }
 
 window.addEventListener("load", function () {
-    image.src = imageFiles.OS[0] + ".png";
+    image.src = imageFiles.OS.name + ".png";
     currentImage = "OS";
-    buttons.forward.style.display = "";
+    buttons.forward.style.display = "inline-block";
 })
 
 buttons.forward.addEventListener("click", function () {
     if (currentImage[1] === "E") {
-
+        buildEventText();
+        buildImage();
     } else {
+        this.innerHTML = "Go forward";
         createScene();
     }
 })
