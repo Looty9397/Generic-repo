@@ -102,7 +102,6 @@ const text = {
 
 const imageFiles = { // "ID": ["FILE", CHOICENUM, ["OPTS"]] || "O" = 1, "T" = 2, "H" = 3
     "NORMAL": ["ONF", "ONR", "ONL", "TNFR", "TNFL", "TNRL", "HNFRL"],//
-    "EVENT": ["OEF", "TEFR", "TEFL"],
     "ONF": {"name": "images/1NF", "count": 1, "choices": ["F"]},//
     "ONR": {"name": "images/1NR", "count": 1, "choices": ["R"]},//
     "ONL": {"name": "images/1NL", "count": 1, "choices": ["L"]},//
@@ -111,8 +110,6 @@ const imageFiles = { // "ID": ["FILE", CHOICENUM, ["OPTS"]] || "O" = 1, "T" = 2,
     "TNRL": {"name": "images/2NRL", "count": 2, "choices": ["R", "L"]},//
     "HNFRL": {"name": "images/3NFRL", "count": 3, "choices": ["F", "R", "L"]},//
     "OEF": {"name": "images/1EF", "count": 1, "choices": ["E"]},
-    "TEFR": {"name": "images/2EFR", "count": 2, "choices": ["E", "R"]},
-    "TEFL": {"name": "images/2EFL", "count": 2, "choices": ["E", "L"]},
     "BEF": {"name": "images/BEF", "count": 1, "choices": ["F"]},
     "OS": {"name": "images/1S", "count": 1, "choices": ["F"]}//
 };
@@ -176,8 +173,7 @@ function buildImage () {
         }
     } else if (Math.random() < Math.sqrt(time)) {
         console.log("event");
-        let imageChosen = choose(imageFiles.EVENT);
-        image.src = imageFiles[imageChosen].name + ".png";
+        image.src = imageFiles.BEF.name + (Math.floor(Math.random()) + 1) + ".png";
         currentImage = imageChosen;
     } else {
         let imageChosen = choose(imageFiles.NORMAL);
