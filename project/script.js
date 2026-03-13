@@ -11,7 +11,7 @@ const buttons = { // Names are self-explanatory except for "break" which is take
 }
 
 // Prepare for webpage interaction and set up the game counters
-var time = 0; var insanity = 0; var exhaustion = 0; var currentEvent = 0; var currentImage = ""; var stage = 0;
+var time = 0; var insanity = 0; var exhaustion = 0; var currentImage = ""; var stage = 0; var currentEvent = 0;
 const main = document.getElementById("main");
 const extra = document.getElementById("extra");
 const special = document.getElementById("special");
@@ -109,78 +109,105 @@ const imageFiles = { // "ID": ["FILE", CHOICENUM, ["OPTS"]] || "O" = 1, "T" = 2,
     "TNFL": {"name": "images/2NFL", "count": 2, "choices": ["F", "L"]},//
     "TNRL": {"name": "images/2NRL", "count": 2, "choices": ["R", "L"]},//
     "HNFRL": {"name": "images/3NFRL", "count": 3, "choices": ["F", "R", "L"]},//
-    "OEF": {"name": "images/1EF", "count": 1, "choices": ["E"]},
+    "OEF": {"name": "images/1EF", "count": 1, "choices": ["F"]},
     "BEF": {"name": "images/BEF", "count": 1, "choices": ["F"]},
     "OS": {"name": "images/1S", "count": 1, "choices": ["F"]}//
 };
 
 // Place the text onto the webpage
-function buildText () {
-    main.innerHTML = choose(text.main);
-    if (Math.random() < 0.25) {
-        extra.innerHTML = choose(text.extra);
+function buildText (type) {
+    if (type === "N") {
+        main.innerHTML = choose(text.main);
+    } else if (type === "E" && stage === 0) {
+        main.innerHTML = choose(text.end.event.discover);
     } else {
-        extra.innerHTML = "";
+        main.innerHTML = text.end.event.entered[stage - 1];
     }
-    let roll = Math.random() * 100;
-    if (time <= 33 && roll < 0.2 * (1.1 ** time)) {
-        currentEvent += 1; // Same result, probability curve go wonky though.
-    } else if (time >= 34 && roll < (-1 * (0.2 * (1.1 ** (-1 *(time - 67.5)))) + 5)) {
-        currentEvent += 1;
-    }
-    roll = Math.random() * 100;
-    if (roll < 5 * Math.sqrt(time)) {
-        currentEvent += 2;
-    }
-    if (currentEvent === 3) { // 1 = insanity; 2 = exhaustion; 3 = 50/50 for either
-        currentEvent = Math.floor(Math.random()) + 1
-    }
-    switch (currentEvent) {
-        default: special.innerHTML = ""; break;
-        case 1: special.innerHTML = choose(text.insanity); insanity += 1; break;
-        case 2: special.innerHTML = choose(text.exhaustion); exhaustion += 1; break;
-    }
-    console.log(text.choices.end[imageFiles[currentImage].count - 1]);
-    console.log(imageFiles[currentImage].count - 1);
-    console.log(currentImage)
-    choices.innerHTML = choose(text.choices.start) + text.choices.end[imageFiles[currentImage].count - 1];
-}
-
-function buildEventText () {
-    if (currentImage[0] === "O" || currentImage[0] === "T") {
-        main.innerHTML = choose(text.event.discover);
-        choices.innerHTML = choose(text.choices.start) + text.choices.end[imageFiles[currentImage].count];
-        buttons.forward.innerHTML = "Enter";
-    } else if (currentImage[0] === "B") {
-        if (stage <= text.event.entered.length) {
-            main.innerHTML = text.event.entered[stage];
-            stage += 1;
-            buttons.forward.innerHTML = "Continue";
+    if (stage === 0) {
+        if (Math.random() < 0.25) {
+            extra.innerHTML = choose(text.extra);
         } else {
-            location.reload();
+            extra.innerHTML = "";
         }
+        let roll = Math.random() * 100;
+        if (time <= 33 && roll < 0.2 * (1.1 ** time)) {
+            currentEvent += 1; // Same result, probability curve go wonky though.
+        } else if (time >= 34 && roll < (-1 * (0.2 * (1.1 ** (-1 *(time - 67.5)))) + 5)) {
+            currentEvent += 1;
+        }
+        roll = Math.random() * 100;
+        if (roll < 5 * Math.sqrt(time)) {
+            currentEvent += 2;
+        }
+        if (currentEvent === 3) { // 1 = insanity; 2 = exhaustion; 3 = 50/50 for either
+            currentEvent = Math.floor(Math.random()) + 1
+        }
+        switch (currentEvent) {
+            default: special.innerHTML = ""; break;
+            case 1: special.innerHTML = choose(text.insanity); insanity += 1; break;
+            case 2: special.innerHTML = choose(text.exhaustion); exhaustion += 1; break;
+        }
+        choices.innerHTML = choose(text.choices.start) + text.choices.end[imageFiles[currentImage].count - 1];
     }
 }
 
 // Place the image onto the webpage
-function buildImage () {
-    if (stage > 0) {
-        image.src = imageFiles.BEF.name;
+function buildImage (type) {
+    if (type === "N") {
+        currentImage = choose(imageFiles.NORMAL);
+        image.src = imageFiles[currentImage].name;
+    } else if (type === "E" && stage >= 1) {
         currentImage = "BEF";
-        if (stage > 3) {
-            image.src = imageFiles.OS.name;
-            currentImage = "OS";
-        }
-    } else if (Math.random() < Math.sqrt(time)) {
-        console.log("event");
-        image.src = imageFiles.BEF.name + (Math.floor(Math.random()) + 1) + ".png";
-        currentImage = imageChosen;
-    } else {
-        let imageChosen = choose(imageFiles.NORMAL);
-        image.src = imageFiles[imageChosen].name + (Math.floor(Math.random()) + 1) + ".png";
-        currentImage = imageChosen;
+        image.src = imageFiles[currentImage].name;
     }
     image.style.filter = "blur(" + (Math.random() * (exhaustion / 5)) + ") invert(" + (Math.random() * (insanity / 20)) + ")";
+}
+
+function buildButtons () {
+    let strayPossibilities = [];
+    if (imageFiles[currentImage].choices.includes("L")) {
+        buttons.left.style.display = "inline-block";
+    } else {
+        buttons.left.style.display = "none";
+        strayPossibilities.push("L");
+    }
+    if (imageFiles[currentImage].choices.includes("F")) {
+        buttons.forward.style.display = "inline-block";
+        if (currentImage === "OEF") {
+            buttons.forward.innerHTML = "Enter";
+        } else if (currentImage === "BEF") {
+            buttons.forward.innerHTML = "Continue";
+        } else {
+            buttons.forward.innerHTML = "Go straight"
+        }
+    } else {
+        buttons.forward.style.display = "none";
+        strayPossibilities.push("F");
+    }
+    if (imageFiles[currentImage].choices.includes("R")) {
+        buttons.right.style.display = "inline-block";
+    } else {
+        buttons.right.style.display = "none";
+        strayPossibilities.push("R");
+    }
+    if (currentEvent === 2) {
+        buttons.break.style.display = "inline-block";
+    } else {
+        buttons.break.style.display = "none";
+    }
+    if (strayPossibilities.length > 0 && Math.random() < 5 * Math.sqrt(time)) {
+        let strayChoice = choose(strayPossibilities);
+        buttons.stray.style.display = "inline-block";
+        if (strayChoice === "F") {
+            buttons.stray.innerHTML = "Go straight";
+        } else if (strayChoice === "R") {
+            buttons.stray.innerHTML = "Turn right";
+        } else if (strayChoice === "L") {
+            buttons.stray.innerHTML = "Turn left";
+        }
+    } else {
+        buttons.stray.style.display = "none";
+    }
 }
 
 function choose (list) {
@@ -188,31 +215,48 @@ function choose (list) {
     return output;
 }
 
-function createScene () {
-    buildImage();
-    buildText();
-}
-
 window.addEventListener("load", function () {
     image.src = imageFiles.OS.name + ".png";
     currentImage = "OS";
     buttons.forward.style.display = "inline-block";
+    main.innerHTML = "You stand at the entrance to the Path."
+    extra.innerHTML = "The sign in front of you says \"something\""
 })
 
 buttons.forward.addEventListener("click", function () {
-    if (currentImage[1] === "E") {
-        buildEventText();
-        buildImage();
-    } else {
-        this.innerHTML = "Go forward";
-        createScene();
+    if (this.innerHTML === "Continue") {
+        if (stage <= 5) {
+            buildImage("E");
+            stage += 1;
+        } else {
+            location.reload();
+        }
+    }
+})
+
+buttons.forward.addEventListener("click", function () {
+    if (this.innerHTML === "Enter") {
+        buildImage("E");
+        stage = 1;
+    }
+})
+
+buttons.forward.addEventListener("click", function () {
+    if (this.innerHTML === "Enter the path" || this.innerHTML === "Go straight") {
+        buildImage("N");
+        buildText("N");
+        buildButtons();
     }
 })
 
 buttons.left.addEventListener("click", function () {
-    createScene();
+    buildImage("N");
+    buildText("N");
+    buildButtons();
 })
 
 buttons.right.addEventListener("click", function () {
-    createScene();
+    buildImage("N");
+    buildText("N");
+    buildButtons();
 })
