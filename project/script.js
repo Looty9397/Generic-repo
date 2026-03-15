@@ -1,7 +1,13 @@
 // Created by Looty9397
 // Genre(s): Woodland, Existential Horror
 
-// Set up buttons for user interaction
+// If this project were to lose points on anything, I think it would be on these things only.
+// 1. No try/catch blocks. I don't have any since I don't need any; I do not take any direct user input.
+// 2. Perhaps hard to identify story. Its not really well defined due to the variable nature of events.
+
+// --- SETUP FOR EVERYTHING ELSE ---
+
+// Just a container for the buttons
 const buttons = { // Names are self-explanatory except for "break" which is take a (permanent) break
     "forward": document.getElementById("forward"),
     "left": document.getElementById("left"),
@@ -11,12 +17,14 @@ const buttons = { // Names are self-explanatory except for "break" which is take
 }
 
 // Prepare for webpage interaction and set up the game counters
-var time = 0; var insanity = 0; var exhaustion = 0; var currentImage = ""; var stage = 0; var currentEvent = 0;
-const main = document.getElementById("main");
-const extra = document.getElementById("extra");
-const special = document.getElementById("special");
-const choices = document.getElementById("choices");
-const image = document.getElementById("image")
+var time = 0; var insanity = 0; var exhaustion = 0; var currentImage = ""; var stage = 0; var currentEvent = 0; var mode = "dark";
+const para = { // Text slots for the UI
+    "main": document.getElementById("main"),
+    "extra": document.getElementById("extra"),
+    "special": document.getElementById("special"),
+    "choices": document.getElementById("choices"),
+}
+const image = document.getElementById("image");
 
 // Game texts, semi-randomly displayed
 const text = {
@@ -100,6 +108,7 @@ const text = {
     }
 }
 
+// Database of images to be used during execution
 const imageFiles = { // "ID": ["FILE", CHOICENUM, ["OPTS"]] || "O" = 1, "T" = 2, "H" = 3
     "NORMAL": ["ONF", "ONR", "ONL", "TNFR", "TNFL", "TNRL", "HNFRL"],//
     "ONF": {"name": "images/1NF", "count": 1, "choices": ["F"]},//
@@ -114,40 +123,58 @@ const imageFiles = { // "ID": ["FILE", CHOICENUM, ["OPTS"]] || "O" = 1, "T" = 2,
     "OS": {"name": "images/1S", "count": 1, "choices": ["F"]}//
 };
 
+// --- PROCESSES TO BE USED ---
+
 // Place the text onto the webpage
 function buildText (type) {
+    clearText();
     if (type === "N") {
-        main.innerHTML = choose(text.main);
+        para.main.innerHTML = choose(text.main);
+        if (Math.random < 0.25) {
+            para.extra.innerHTML = choose(text.extra);
+        }
     } else if (type === "E" && stage === 0) {
-        main.innerHTML = choose(text.end.event.discover);
+        para.main.innerHTML = choose(text.end.event.discover);
     } else {
-        main.innerHTML = text.end.event.entered[stage - 1];
+        para.main.innerHTML = text.end.event.entered[stage - 1];
+        if (Math.random < 0.25) {
+            para.extra.innerHTML = choose(text.extra);
+        }
     }
     if (stage === 0) {
+        currentEvent = 0;
         if (Math.random() < 0.25) {
-            extra.innerHTML = choose(text.extra);
+            para.extra.innerHTML = choose(text.extra);
         } else {
-            extra.innerHTML = "";
+            para.extra.innerHTML = "";
         }
-        let roll = Math.random() * 100;
-        if (time <= 33 && roll < 0.2 * (1.1 ** time)) {
-            currentEvent += 1; // Same result, probability curve go wonky though.
-        } else if (time >= 34 && roll < (-1 * (0.2 * (1.1 ** (-1 *(time - 67.5)))) + 5)) {
+        if (Math.random() < (0.1 * Math.sqrt(time))) {
             currentEvent += 1;
         }
-        roll = Math.random() * 100;
-        if (roll < 5 * Math.sqrt(time)) {
+        if (Math.random() < (0.1 * Math.sqrt(time))) {
             currentEvent += 2;
         }
         if (currentEvent === 3) { // 1 = insanity; 2 = exhaustion; 3 = 50/50 for either
             currentEvent = Math.floor(Math.random()) + 1
         }
-        switch (currentEvent) {
-            default: special.innerHTML = ""; break;
-            case 1: special.innerHTML = choose(text.insanity); insanity += 1; break;
-            case 2: special.innerHTML = choose(text.exhaustion); exhaustion += 1; break;
+        if (currentEvent === 1) {
+            if (Math.random() < 0.1) {
+                clearText();
+                para.main.innerHTML = choose(text.end.endings.insanity);
+                para.extra.innerHTML = "You have reached an ending. Reload the page to play again.";
+                insanity = "END";
+            } else {
+                para.special.innerHTML = choose(text.insanity);
+                insanity += 1;
+                para.choices.innerHTML = choose(text.choices.start) + text.choices.end[imageFiles[currentImage].count - 1];
+            }
+        } else if (currentEvent === 2) {
+            para.special.innerHTML = choose(text.exhaustion);
+            exhaustion += 1;
+            para.choices.innerHTML = choose(text.choices.start) + text.choices.end[imageFiles[currentImage].count - 1];
+        } else {
+            para.choices.innerHTML = choose(text.choices.start) + text.choices.end[imageFiles[currentImage].count - 1];
         }
-        choices.innerHTML = choose(text.choices.start) + text.choices.end[imageFiles[currentImage].count - 1];
     }
 }
 
@@ -155,108 +182,219 @@ function buildText (type) {
 function buildImage (type) {
     if (type === "N") {
         currentImage = choose(imageFiles.NORMAL);
-        image.src = imageFiles[currentImage].name;
+        image.src = imageFiles[currentImage].name + (Math.floor(2 * Math.random()) + 1) + ".png";
     } else if (type === "E" && stage >= 1) {
         currentImage = "BEF";
-        image.src = imageFiles[currentImage].name;
+        image.src = imageFiles[currentImage].name + ".png";
+    } else if (type === "E") {
+        currentImage = "OEF";
+        image.src = imageFiles[currentImage].name + (Math.floor(2 * Math.random()) + 1) + ".png";
     }
-    image.style.filter = "blur(" + (Math.random() * (exhaustion / 5)) + ") invert(" + (Math.random() * (insanity / 20)) + ")";
+    image.style.filter = "blur(" + (exhaustion / 2) + "px) invert(" + (insanity / 20) + ")";
 }
 
+// Place the buttons onto the webpage
 function buildButtons () {
-    let strayPossibilities = [];
-    if (imageFiles[currentImage].choices.includes("L")) {
-        buttons.left.style.display = "inline-block";
-    } else {
-        buttons.left.style.display = "none";
-        strayPossibilities.push("L");
-    }
-    if (imageFiles[currentImage].choices.includes("F")) {
-        buttons.forward.style.display = "inline-block";
-        if (currentImage === "OEF") {
-            buttons.forward.innerHTML = "Enter";
-        } else if (currentImage === "BEF") {
-            buttons.forward.innerHTML = "Continue";
+    if (insanity !== "END") {
+        let strayPossibilities = [];
+        if (imageFiles[currentImage].choices.includes("L")) {
+            buttons.left.style.display = "inline-block";
         } else {
-            buttons.forward.innerHTML = "Go straight"
+            buttons.left.style.display = "none";
+            strayPossibilities.push("L");
+        }
+        if (imageFiles[currentImage].choices.includes("F")) {
+            buttons.forward.style.display = "inline-block";
+            if (currentImage === "OEF") {
+                buttons.forward.innerHTML = "Enter";
+            } else if (currentImage === "BEF") {
+                buttons.forward.innerHTML = "Continue";
+            } else {
+                buttons.forward.innerHTML = "Go straight"
+            }
+        } else {
+            buttons.forward.style.display = "none";
+            strayPossibilities.push("F");
+        }
+        if (imageFiles[currentImage].choices.includes("R")) {
+            buttons.right.style.display = "inline-block";
+        } else {
+            buttons.right.style.display = "none";
+            strayPossibilities.push("R");
+        }
+        if (currentEvent === 2 && currentImage !== "BEF") {
+            buttons.break.style.display = "inline-block";
+        } else {
+            buttons.break.style.display = "none";
+        }
+        if (strayPossibilities.length > 0 && Math.random() < (Math.sqrt(insanity) * Math.sqrt(exhaustion) * (1 / (time + 1))) && currentImage !== "BEF") {
+            let strayChoice = choose(strayPossibilities);
+            buttons.stray.style.display = "inline-block";
+            if (strayChoice === "F") {
+                buttons.stray.innerHTML = "Go straight";
+            } else if (strayChoice === "R") {
+                buttons.stray.innerHTML = "Turn right";
+            } else if (strayChoice === "L") {
+                buttons.stray.innerHTML = "Turn left";
+            }
+        } else {
+            buttons.stray.style.display = "none";
         }
     } else {
         buttons.forward.style.display = "none";
-        strayPossibilities.push("F");
-    }
-    if (imageFiles[currentImage].choices.includes("R")) {
-        buttons.right.style.display = "inline-block";
-    } else {
+        buttons.left.style.display = "none";
         buttons.right.style.display = "none";
-        strayPossibilities.push("R");
-    }
-    if (currentEvent === 2) {
-        buttons.break.style.display = "inline-block";
-    } else {
-        buttons.break.style.display = "none";
-    }
-    if (strayPossibilities.length > 0 && Math.random() < 5 * Math.sqrt(time)) {
-        let strayChoice = choose(strayPossibilities);
-        buttons.stray.style.display = "inline-block";
-        if (strayChoice === "F") {
-            buttons.stray.innerHTML = "Go straight";
-        } else if (strayChoice === "R") {
-            buttons.stray.innerHTML = "Turn right";
-        } else if (strayChoice === "L") {
-            buttons.stray.innerHTML = "Turn left";
-        }
-    } else {
         buttons.stray.style.display = "none";
+        buttons.break.style.display = "none";
     }
 }
 
+// Since there doesn't seem to be a translation of python random.choice(), I made my own
 function choose (list) {
     let output = list[Math.floor(Math.random() * list.length)];
     return output;
 }
 
+// Self-explanatory
+function clearText () {
+    para.main.innerHTML = "";
+    para.extra.innerHTML = "";
+    para.special.innerHTML = "";
+    para.choices.innerHTML = "";
+}
+
+// --- FUNCTIONALITY, EVENT LISTENERS, ETC. ---
+
+// Initial text
 window.addEventListener("load", function () {
     image.src = imageFiles.OS.name + ".png";
     currentImage = "OS";
     buttons.forward.style.display = "inline-block";
-    main.innerHTML = "You stand at the entrance to the Path."
-    extra.innerHTML = "The sign in front of you says \"something\""
+    para.main.innerHTML = "You stand at the entrance to the Path. The signs in front of you read:";
+    para.extra.innerHTML = "\"Those who give up / those led astray / do not survive / another day.\""
 })
 
+// Forward buttons interactions
 buttons.forward.addEventListener("click", function () {
     if (this.innerHTML === "Continue") {
-        if (stage <= 5) {
-            buildImage("E");
+        if (stage <= 4) {
             stage += 1;
+            buildImage("E");
+            buildText("E");
+            buildButtons();
         } else {
             location.reload();
         }
-    }
-})
-
-buttons.forward.addEventListener("click", function () {
-    if (this.innerHTML === "Enter") {
-        buildImage("E");
+    } else if (this.innerHTML === "Enter") {
         stage = 1;
-    }
-})
-
-buttons.forward.addEventListener("click", function () {
-    if (this.innerHTML === "Enter the path" || this.innerHTML === "Go straight") {
-        buildImage("N");
-        buildText("N");
+        buildImage("E");
+        buildText("E");
+        buildButtons();
+    } else if (this.innerHTML === "Enter the path" || this.innerHTML === "Go straight") {
+        if (Math.random() < 0.05) {
+            buildImage("E");
+            buildText("E");
+        } else {
+            buildImage("N");
+            buildText("N");
+        }
         buildButtons();
     }
 })
 
+// Left button interactions
 buttons.left.addEventListener("click", function () {
-    buildImage("N");
-    buildText("N");
+    if (Math.random() < 0.05) {
+        buildImage("E");
+        buildText("E");
+    } else {
+        buildImage("N");
+        buildText("N");
+    }
     buildButtons();
 })
 
+// Right button interactions
 buttons.right.addEventListener("click", function () {
-    buildImage("N");
-    buildText("N");
+    if (Math.random() < 0.05) {
+        buildImage("E");
+        buildText("E");
+    } else {
+        buildImage("N");
+        buildText("N");
+    }
     buildButtons();
 })
+
+// Stray button + ending
+buttons.stray.addEventListener("click", function () {
+    clearText();
+    para.main.innerHTML = choose(text.end.endings.stray);
+    para.extra.innerHTML = "You have reached an ending. Reload the page to play again.";
+    buttons.forward.style.display = "none";
+    buttons.left.style.display = "none";
+    buttons.right.style.display = "none";
+    buttons.stray.style.display = "none";
+    buttons.break.style.display = "none";
+})
+
+// Break button + ending
+buttons.break.addEventListener("click", function () {
+    clearText();
+    para.main.innerHTML = choose(text.end.endings.break);
+    para.extra.innerHTML = "You have reached an ending. Reload the page to play again.";
+    buttons.forward.style.display = "none";
+    buttons.left.style.display = "none";
+    buttons.right.style.display = "none";
+    buttons.stray.style.display = "none";
+    buttons.break.style.display = "none";
+})
+
+// Light/dark mode
+image.addEventListener("click", function () {
+    if (mode === "light") {
+        document.body.style.backgroundColor = "#222";
+        document.body.style.color = "#ddd";
+        mode = "dark";
+    } else if (mode === "dark") {
+        document.body.style.backgroundColor = "#ddd";
+        document.body.style.color = "#222";
+        mode = "light";
+    }
+})
+
+// Minor VFX
+image.addEventListener("mouseover", function () {
+    this.style.width = "525px";
+})
+
+image.addEventListener("mouseout", function () {
+    this.style.width = "500px";
+})
+
+// Global button functionality
+for (let i = 0; i < 5; i++) { // 3 event listeners * 5 buttons = 15 total event listeners from this alone
+    btn = ["forward", "left", "right", "stray", "break"][i] // These would be separate but I felt like
+    buttons[btn].addEventListener("mouseover", function () { // condensing it. Doubles up the bonus to make it
+        if (mode === "light") { // way easier to edit in mass. Triples up the bonus to make it easier to read
+            this.style.backgroundColor = "#222"; // for you, who is reading this. :D
+            this.style.color = "#ddd"; // I would have put these first two in CSS with :hover, but then it would
+        } else if (mode === "dark") { // not automatically adapt to changes in light/dark mode. At least, I don't
+            this.style.backgroundColor = "#ddd"; // know how to make it do that, if it is possible.
+            this.style.color = "#222";
+        }
+    })
+    buttons[btn].addEventListener("mouseout", function () {
+        if (mode === "light") {
+            this.style.backgroundColor = "#ddd";
+            this.style.color = "#222";
+        } else if (mode === "dark") {
+            this.style.backgroundColor = "#222";
+            this.style.color = "#ddd";
+        }
+    })
+    buttons[btn].addEventListener("click", function () {
+        time += 1;
+        document.getElementById("heading").innerHTML = "The Walking Path - Hour " + time;
+    })
+}
