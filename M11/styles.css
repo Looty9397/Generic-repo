@@ -1,23 +1,23 @@
 .blank {
-
+    background-color: white;
 }
 
 .visited {
-
+    background-color: gold;
 }
 
 .wall {
-
+    background-color: midnightblue;
 }
 
 .start {
-
+    background-color: forestgreen;
 }
 
 .end {
-
+    background-color: darkred;
 }
 
 .path {
-
+    background-color: goldenrod;
 }
