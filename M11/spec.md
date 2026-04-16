@@ -14,13 +14,21 @@ A web app that generates a colored graph displaying the fastest route from the s
 
 **Cell**
 - A single cell on the grid.
-- *Attributes and methods*
-  - state: The current state of the cell (i.e. visited, wall, path, goal, etc). Determines the color of the cell.
-  - neighbors: An Array of Cells, displaying neighbors. Organized in order of Left Right Up Down for consistency.
-  - element: The element for the actual cell itself.
-  - setState(state): Changes this.state to state, provided state is valid.
-  - refresh(): Updates this.element with any new states. Determines cell color.
-  - transform(): Becomes a wall / normal cell. Toggles between both states and calls this.refresh() once complete.
+- Attributes and methods
+  - **state**: The current state of the cell (i.e. visited, wall, path, goal, etc). Determines the color of the cell.
+  - **neighbors**: An Array of Cells, displaying neighbors. Organized in order of Left Right Up Down for consistency.
+  - **element**: The element for the actual cell itself.
+  - **parent**: The parent cell for this cell
+  - **setState**(state): Changes this.state to state, provided state is valid.
+  - **refresh**(): Updates this.element with any new states. Determines cell color.
+  - **transform**(): Becomes a wall / normal cell. Toggles between both states and calls this.refresh() once complete.
+
+**Queue**
+- A queue object, can only be modified by appending to the back and taking from the front.
+- Attributes and methods
+  - **items**: The actual data.
+  - **insert**(): append an item to the this.items
+  - **extract**(): Take an item from this.items
 
 ## Justification of design
 
