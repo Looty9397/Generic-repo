@@ -45,7 +45,7 @@ class Cell {
         this.element = document.createElement("div");
         this.element.id = id;
         this.element.class = this.state;
-        this.parent = new Number(null); // For use in pathfinding algorithms. Blank by default.
+        this.parent = new Number(null); // For use in pathfinding algorithms. Is an index. getPoint()
     };
 
     setState (state) {
@@ -80,7 +80,7 @@ function getIndex (point) {
 };
 
 let algorithms = [
-    function () { // BFS | Code made using GeeksForGeeks and Wikipedia as references.
+    function () { // BFS | Code made using GeeksForGeeks and Wikipedia psuedocode as references.
         let visited = new Array(grid.length).fill(false);
         visited[getIndex(startPos)] = true;
         let path = []; let current;
@@ -146,3 +146,82 @@ var grid = []; // A list of Cells. Not separated like [y[x]] for ease of access 
 var dimensions = []; // [<x>, <y>]
 var startPos = []; // [<x>, <y>]
 var endPos = []; // [<x>, <y>]
+
+document.getElementById("sx").addEventListener("change", function () {
+    if (this.value > dimensions[0]) {
+        this.value = dimensions[0];
+    } else if (this.value < 1) {
+        this.value = 1;
+    };
+    grid[getIndex(startPos)].setState("empty");
+    startPos[0] = this.value;
+    grid[getIndex(startPos)].setState("start");
+});
+
+document.getElementById("sy").addEventListener("change", function () {
+    if (this.value > dimensions[1]) {
+        this.value = dimensions[1];
+    } else if (this.value < 1) {
+        this.value = 1;
+    };
+    grid[getIndex(startPos)].setState("empty");
+    startPos[1] = this.value;
+    grid[getIndex(startPos)].setState("start");
+});
+
+document.getElementById("ex").addEventListener("change", function () {
+    console.log(this.value, dimensions);
+    if (this.value > dimensions[0]) {
+        this.value = dimensions[0];
+    } else if (this.value < 1) {
+        this.value = 1;
+    };
+    grid[getIndex(endPos)].setState("empty");
+    endPos[0] = this.value;
+    grid[getIndex(endPos)].setState("end");
+});
+
+document.getElementById("ey").addEventListener("change", function () {
+    if (this.value > dimensions[1]) {
+        this.value = dimensions[1];
+    } else if (this.value < 1) {
+        this.value = 1;
+    };
+    grid[getIndex(endPos)].setState("empty");
+    endPos[1] = this.value;
+    grid[getIndex(endPos)].setState("end");
+});
+
+document.getElementById("dx").addEventListener("change", function () {
+    if (this.value > 32) {
+        this.value = 32;
+    } else if (this.value < 1) {
+        this.value = 1;
+    };
+    dimensions[0] = this.value;
+});
+
+document.getElementById("dy").addEventListener("change", function () {
+    if (this.value > 32) {
+        this.value = 32;
+    } else if (this.value < 1) {
+        this.value = 1;
+    };
+    dimensions[1] = this.value;
+});
+
+document.getElementById("generate").addEventListener("click", function () {
+    // Error checking first. Actual code will run IF and ONLY IF no errors arise. Erroneous inputs will be marked
+    // with <element>.style.backgroundColor = maroon;
+    // LIST OF ERROR CONDITIONS
+    // 1. Start and End are the same
+    // 2. End is out of bounds
+    // 3. Start is out of bounds
+    // 4. Dimensions are too small (1 x 1)
+    let error = false;
+    if ((startPos === endPos) || (endPos[0] > dimensions[0]) || (endPos[1] > dimensions[1]) || (startPos[0] > dimensions[0]) || (startPos[1] > dimensions[1]) || (dimensions[0] * dimensions[1] === 1)) {
+        error = true;
+    };
+    console.log(error);
+    // DISPLAY THE CODE AND STUFF
+});

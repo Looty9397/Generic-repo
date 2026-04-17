@@ -1,3 +1,30 @@
+td {
+    border: black solid 2px;
+}
+
+body {
+    background-color: #222;
+    color: #eee;
+    font-family: Consolas, "Courier New", monospace;
+    font-weight: bold;
+}
+
+input {
+    border: #eee solid 1px;
+    color: inherit;
+    font-family: inherit;
+    background-color: inherit;
+    font-weight: inherit;
+}
+
+button {
+    border: #eee solid 1px;
+    color: inherit;
+    font-family: inherit;
+    background-color: inherit;
+    font-weight: inherit;
+}
+
 .blank {
     background-color: white;
 }
@@ -21,3 +48,8 @@
 .path {
     background-color: goldenrod;
 }
+
+.smallInput {
+    width: 5ch;
+}
+

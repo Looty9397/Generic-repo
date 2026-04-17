@@ -9,6 +9,29 @@
 </head>
 <body>
     <table id="graph"></table>
-    <div id="options"></div>
+    <div id="options">
+        <div id="labels" style="display: inline-block;">
+            <p>Start Point</p>
+            <p>End Point</p>
+            <p>Dimensions</p>
+        </div>
+        <div id="coords" style="display: inline-block;">
+            <p>(<input type="number" placeholder="x" class="smallInput" id="sx" value="1">,
+            <input type="number" placeholder="y" class="smallInput" id="sy" value="1">)</p>
+            <p>(<input type="number" placeholder="x" class="smallInput" id="ex" value="10">,
+            <input type="number" placeholder="y" class="smallInput" id="ey" value="10">)</p>
+            <p><input type="number" placeholder="width" class="smallInput" id="dx" value="10"> x
+            <input type="number" placeholder="height" class="smallInput" id="dy" value="10"></p>
+        </div><br/>
+        <div id="algo">
+            <label>
+                <input type="radio" name="algo" value="bfs" checked="true">BFS
+            </label>&nbsp;&nbsp;&nbsp;
+            <label>
+                <input type="radio" name="algo" value="astar">A*
+            </label>
+        </div>
+        <button id="generate">Generate Path</button>
+    </div>
 </body>
 </html>
