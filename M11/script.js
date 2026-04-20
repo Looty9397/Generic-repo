@@ -1,15 +1,17 @@
 // Made by Looty9397
 
+// -- CLASSES --
+
 class queue { // FIFO
     constructor () {
         this.items = [];
     };
 
-    insert (obj) {
+    insert (obj) { // enqueue
         this.items.push(obj);
     };
 
-    extract () {
+    extract () { // dequeue
         // let obj = this.items.reverse().pop();
         // this.items.reverse(); // Rereverse
         return this.items.shift();
@@ -43,7 +45,7 @@ class Cell {
         this.state = "blank";
         this.neighbors = [];
         this.element = document.createElement("div");
-        this.element.id = id;
+        this.element.id = "C" + id;
         this.element.class = this.state;
         this.parent = new Number(null); // For use in pathfinding algorithms. Is an index. getPoint()
     };
@@ -54,6 +56,7 @@ class Cell {
         } else {
             console.log("setState() method at Cell " + this.element.id + ": '" + state + "' is not a valid state.");
         };
+        this.refresh();
     };
 
     refresh () {
@@ -70,6 +73,8 @@ class Cell {
     };
 };
 
+// -- FUNCTIONS --
+
 // just for the sake of simplicity
 function getPoint (index) {
     return [index % dimensions[0], Math.floor(index / dimensions[0])];
@@ -77,6 +82,49 @@ function getPoint (index) {
 
 function getIndex (point) {
     return (point[1] * dimensions[0]) + point[0];
+};
+
+Array.prototype.isEqualTo = function (other) {
+    if (this.length === other.length) {
+        for (let i = 0; i < this.length; i++) {
+            if (this[i] === other[i]) {
+                return true;
+            };
+        };
+        return false;
+    };
+    return false;
+};
+
+function renderTable () {
+    for (let i = 0; i < dimensions[1]; i++) {
+        let tr = document.createElement("tr");
+        for (let j = 0; j < dimensions[0]; j++) {
+            let td = document.createElement("td");
+            td.appendChild(grid[(i * dimensions[0]) + j].element);
+            td.id = (i * dimensions[0]) + j;
+            td.addEventListener("click", function () {
+                grid[this.id].transform();
+                renderTable();
+            });
+            tr.appendChild(td);
+        };
+        graph.appendChild(tr);
+    };
+};
+
+function genTable () {
+    graph.innerHTML = "";
+    for (let i = 0; i < (dimensions[0] * dimensions[1]); i++) {
+        if (getPoint(i).isEqualTo(startPos)) {
+            grid[i] = new Cell(i).setState("start");
+        } else if (getPoint[i].isEqualTo(endPos)) {
+            grid[i] = new Cell(i).setState("end");
+        } else {
+            grid[i] = new Cell(i);
+        };
+    };
+    renderTable();
 };
 
 let algorithms = [
@@ -107,9 +155,10 @@ let algorithms = [
     function () { // A* | Code made using Wikipedia pseudocode as a reference.
         // Plan for heuristic: pythagorean theorem. sqrt(x-dist^2 + y-dist^2)
         function h (point) {
-            return Math.sqrt(Math.pow(Math.abs(endPos[0] - getPoint(point)[0]), 2) + Math.pow(Math.abs(endPos[1] - getPoint(point)[1]), 2)); // IN MATH NOTATION: √(|endx - pointx|^2 + |endy - pointy|^2)
+            return Math.sqrt(Math.pow(Math.abs(endPos[0] - getPoint(point)[0]), 2) + Math.pow(Math.abs(endPos[1] - getPoint(point)[1]), 2)) + (Math.random * 0.01); // IN MATH NOTATION: √(|endx - pointx|^2 + |endy - pointy|^2)
+            // "+ (Math.random * 0.01)"
         };
-        q = [getIndex(startPos)]; // Queueueueueueueueueueueueueueueueueueue but not
+        q = [getIndex(startPos)]; // Queueueueueueueueueueueueueueue but not but also yes but actually not
         g = new Array(grid.length).fill(Infinity);
         g[getIndex(startPos)] = 0;
         f = new Array(grid.length).fill(Infinity);
@@ -141,13 +190,26 @@ let algorithms = [
     },
 ];
 
-var graph = document.getElementById("graph");
-var grid = []; // A list of Cells. Not separated like [y[x]] for ease of access in algorithms.
-var dimensions = []; // [<x>, <y>]
-var startPos = []; // [<x>, <y>]
-var endPos = []; // [<x>, <y>]
+// -- OBJECTS --
 
-document.getElementById("sx").addEventListener("change", function () {
+var graph = document.getElementById("graph");
+var dimensions = [10, 10]; // [<x>, <y>]
+var startPos = [1, 1]; // [<x>, <y>]
+var endPos = [10, 10]; // [<x>, <y>]
+var grid = new Array(dimensions[0] * dimensions[1]); // A list of Cells. Not separated like [y[x]] for ease of access in algorithms.
+
+var e = {
+    sx: document.getElementById("sx"),
+    sy: document.getElementById("sy"),
+    ex: document.getElementById("ex"),
+    ey: document.getElementById("ey"),
+    dx: document.getElementById("dx"),
+    dy: document.getElementById("dy")
+};
+
+// -- EVENT LISTENERS --
+
+e.sx.addEventListener("change", function () {
     if (this.value > dimensions[0]) {
         this.value = dimensions[0];
     } else if (this.value < 1) {
@@ -158,7 +220,7 @@ document.getElementById("sx").addEventListener("change", function () {
     grid[getIndex(startPos)].setState("start");
 });
 
-document.getElementById("sy").addEventListener("change", function () {
+e.sy.addEventListener("change", function () {
     if (this.value > dimensions[1]) {
         this.value = dimensions[1];
     } else if (this.value < 1) {
@@ -169,7 +231,7 @@ document.getElementById("sy").addEventListener("change", function () {
     grid[getIndex(startPos)].setState("start");
 });
 
-document.getElementById("ex").addEventListener("change", function () {
+e.ex.addEventListener("change", function () {
     console.log(this.value, dimensions);
     if (this.value > dimensions[0]) {
         this.value = dimensions[0];
@@ -181,7 +243,7 @@ document.getElementById("ex").addEventListener("change", function () {
     grid[getIndex(endPos)].setState("end");
 });
 
-document.getElementById("ey").addEventListener("change", function () {
+e.ey.addEventListener("change", function () {
     if (this.value > dimensions[1]) {
         this.value = dimensions[1];
     } else if (this.value < 1) {
@@ -192,7 +254,7 @@ document.getElementById("ey").addEventListener("change", function () {
     grid[getIndex(endPos)].setState("end");
 });
 
-document.getElementById("dx").addEventListener("change", function () {
+e.dx.addEventListener("change", function () {
     if (this.value > 32) {
         this.value = 32;
     } else if (this.value < 1) {
@@ -201,7 +263,7 @@ document.getElementById("dx").addEventListener("change", function () {
     dimensions[0] = this.value;
 });
 
-document.getElementById("dy").addEventListener("change", function () {
+e.dy.addEventListener("change", function () {
     if (this.value > 32) {
         this.value = 32;
     } else if (this.value < 1) {
@@ -218,10 +280,37 @@ document.getElementById("generate").addEventListener("click", function () {
     // 2. End is out of bounds
     // 3. Start is out of bounds
     // 4. Dimensions are too small (1 x 1)
+    // Due to constraints of the design, this is some very ugly code.
+    [e.sx.style.backgroundColor, e.sy.style.backgroundColor, e.ex.style.backgroundColor, e.ey.style.backgroundColor, e.dx.style.backgroundColor, e.dy.style.backgroundColor] = ["inherit", "inherit", "inherit", "inherit", "inherit", "inherit"];
     let error = false;
-    if ((startPos === endPos) || (endPos[0] > dimensions[0]) || (endPos[1] > dimensions[1]) || (startPos[0] > dimensions[0]) || (startPos[1] > dimensions[1]) || (dimensions[0] * dimensions[1] === 1)) {
+    if (startPos.isEqualTo(endPos) && endPos.isEqualTo(startPos)) {
         error = true;
+        [e.sx.style.backgroundColor, e.sy.style.backgroundColor, e.ex.style.backgroundColor, e.ey.style.backgroundColor] = ["darkred", "darkred", "darkred", "darkred"];
     };
-    console.log(error);
+    if (endPos[0] > dimensions[0]) {
+        error = true;
+        e.ex.style.backgroundColor = "darkred";
+    };
+    if (endPos[1] > dimensions[1]) {
+        error = true;
+        e.ey.style.backgroundColor = "darkred";
+    };
+    if (startPos[0] > dimensions[0]) {
+        error = true;
+        e.sx.style.backgroundColor = "darkred";
+    };
+    if (startPos[1] > dimensions[1]) {
+        error = true;
+        e.sy.style.backgroundColor = "darkred";
+    };
+    if (dimensions[0] * dimensions[1] === 1) {
+        error = true;
+        e.dx.style.backgroundColor = "darkred";
+        e.dy.style.backgroundColor = "darkred";
+    };
     // DISPLAY THE CODE AND STUFF
+});
+
+window.addEventListener("load", function () {
+    genTable();
 });
