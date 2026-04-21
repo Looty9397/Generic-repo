@@ -44,9 +44,13 @@ class Cell {
     constructor (id) {
         this.state = "blank";
         this.neighbors = [];
-        this.element = document.createElement("div");
+        this.element = document.createElement("td");
         this.element.id = "C" + id;
-        this.element.class = this.state;
+        this.element.addEventListener("click", function () {
+            grid[Number(this.id.slice(1))].transform();
+            renderTable();
+        });
+        this.element.className = this.state;
         this.parent = new Number(null); // For use in pathfinding algorithms. Is an index. getPoint()
     };
 
@@ -56,20 +60,17 @@ class Cell {
         } else {
             console.log("setState() method at Cell " + this.element.id + ": '" + state + "' is not a valid state.");
         };
-        this.refresh();
-    };
-
-    refresh () {
-        this.element.class = this.state;
+        this.element.className = this.state;
     };
 
     transform () {
-        if (this.state = "wall") {
+        console.log("Transforming cell " + this.element.id)
+        if (this.state === "wall") {
             this.setState("blank");
-        } else {
+        } else if (!["start", "end"].includes(this.state)) {
             this.setState("wall");
         };
-        this.refresh();
+        this.element.className = this.state;
     };
 };
 
@@ -77,36 +78,36 @@ class Cell {
 
 // just for the sake of simplicity
 function getPoint (index) {
-    return [index % dimensions[0], Math.floor(index / dimensions[0])];
+    // So we have a point [x, y] and a number and the dimensions of the graph. The x as I have it now works.
+    // the y howver does not. index % dimensions[0] is the x value. y value would be the INDEX minus THE X
+    // DIVIDED BY THE X DIMENSIONS. oh that makes so much sense now.
+    // OR NOT SINCE ITS STILL NOT WORKING. lets say we have index 73. index % x-dim (dims are 10 x 10) woudl be 3.
+    // so thats good and correct. y value = 72.7 as it is now. badbadbadbad. 73 - 3 = 70 / 10 = 7. BRUH ITS THE ()
+    return [index % dimensions[0], (index - (index % dimensions[0])) / dimensions[0]];
 };
 
 function getIndex (point) {
-    return (point[1] * dimensions[0]) + point[0];
+    return (point[1] * dimensions[0]) + point[0] - 1;
 };
 
 Array.prototype.isEqualTo = function (other) {
+    let equal = true; // ASSUME TRUE, CORRECT IF FALSE.
     if (this.length === other.length) {
         for (let i = 0; i < this.length; i++) {
-            if (this[i] === other[i]) {
-                return true;
+            if (this[i] !== other[i]) {
+                equal = false;
             };
         };
-        return false;
     };
-    return false;
+    return equal;
 };
 
 function renderTable () {
+    graph.innerHTML = "";
     for (let i = 0; i < dimensions[1]; i++) {
         let tr = document.createElement("tr");
         for (let j = 0; j < dimensions[0]; j++) {
-            let td = document.createElement("td");
-            td.appendChild(grid[(i * dimensions[0]) + j].element);
-            td.id = (i * dimensions[0]) + j;
-            td.addEventListener("click", function () {
-                grid[this.id].transform();
-                renderTable();
-            });
+            let td = grid[(i * dimensions[0]) + j].element;
             tr.appendChild(td);
         };
         graph.appendChild(tr);
@@ -114,33 +115,49 @@ function renderTable () {
 };
 
 function genTable () {
-    graph.innerHTML = "";
     for (let i = 0; i < (dimensions[0] * dimensions[1]); i++) {
+        grid[i] = new Cell(i);
         if (getPoint(i).isEqualTo(startPos)) {
-            grid[i] = new Cell(i).setState("start");
-        } else if (getPoint[i].isEqualTo(endPos)) {
-            grid[i] = new Cell(i).setState("end");
-        } else {
-            grid[i] = new Cell(i);
+            grid[i].setState("start");
+        } else if (getPoint(i).isEqualTo(endPos)) {
+            grid[i].setState("end")
         };
+    };
+    for (let i = 0; i < (dimensions[0] * dimensions[1]); i++) {
+        if (getPoint(i)[0] === 0) {
+            grid[i].neighbors.push(i + 1);
+        } else if (getPoint(i)[0] === dimensions[0] - 1) {
+            grid[i].neighbors.push(i - 1);
+        } else {
+            grid[i].neighbors.push(i + 1);
+            grid[i].neighbors.push(i - 1);
+        };
+        if (getPoint(i)[1] === 0) {
+            grid[i]
+        } else if (getPoint(i)[1] === dimensions[1] - 1) {
+
+        } else {
+
+        }
     };
     renderTable();
 };
 
-let algorithms = [
-    function () { // BFS | Code made using GeeksForGeeks and Wikipedia psuedocode as references.
+let algorithms = {
+    bfs: function () { // BFS | Code made using GeeksForGeeks and Wikipedia psuedocode as references.
         let visited = new Array(grid.length).fill(false);
         visited[getIndex(startPos)] = true;
         let path = []; let current;
-        q = new queue().insert(getIndex(startPos)); // Queue holds the index.
+        q = new queue();
+        q.insert(getIndex(startPos)); // Queue holds the index.
         while (!q.isEmpty()) {
             current = q.extract(); // an index
             if (getPoint(current) === endPos) {
                 break;
             };
             for (var i of grid[current].neighbors) { // iterates through a list (i is part of the list)
-                if (!visited[i]) {
-                    visited[i] = true;
+                if (!visited[i] && grid[i].state !== "wall") {
+                    visited[i] = true; grid[i].setState = "visited"
                     grid[i].parent = current;
                     q.insert(i);
                 };
@@ -152,7 +169,7 @@ let algorithms = [
         };
         return path;
     },
-    function () { // A* | Code made using Wikipedia pseudocode as a reference.
+    astar: function () { // A* | Code made using Wikipedia pseudocode as a reference.
         // Plan for heuristic: pythagorean theorem. sqrt(x-dist^2 + y-dist^2)
         function h (point) {
             return Math.sqrt(Math.pow(Math.abs(endPos[0] - getPoint(point)[0]), 2) + Math.pow(Math.abs(endPos[1] - getPoint(point)[1]), 2)) + (Math.random * 0.01); // IN MATH NOTATION: √(|endx - pointx|^2 + |endy - pointy|^2)
@@ -172,8 +189,8 @@ let algorithms = [
             };
             q.shift(); // Remove the current cell
             for (var i of grid[current].neighbors) {
-                if (g[current] + 1 < g[i]) {
-                    grid[i].parent = current;
+                if (g[current] + 1 < g[i] && grid[i].state !== "wall") {
+                    grid[i].parent = current; grid[i].setState("visited");
                     g[i] = g[current] + 1;
                     f[i] = g[current] + h(i) + 1;
                     if (!q.includes(i)) {
@@ -188,14 +205,14 @@ let algorithms = [
         };
         return path;
     },
-];
+};
 
 // -- OBJECTS --
 
 var graph = document.getElementById("graph");
 var dimensions = [10, 10]; // [<x>, <y>]
-var startPos = [1, 1]; // [<x>, <y>]
-var endPos = [10, 10]; // [<x>, <y>]
+var startPos = [0, 0]; // [<x>, <y>]
+var endPos = [9, 9]; // [<x>, <y>]
 var grid = new Array(dimensions[0] * dimensions[1]); // A list of Cells. Not separated like [y[x]] for ease of access in algorithms.
 
 var e = {
@@ -309,6 +326,22 @@ document.getElementById("generate").addEventListener("click", function () {
         e.dy.style.backgroundColor = "darkred";
     };
     // DISPLAY THE CODE AND STUFF
+    if (!error) {
+        // Get answer to which algorithms
+        let choices = document.getElementsByName("algo");
+        let algo;
+        for (var i of choices) {
+            if (i.checked) {
+                algo = i.value;
+            };
+        };
+        let path = algorithms[algo]();
+        for (var i of path) {
+            if (grid[i].state === "visited") {
+                grid[i].setState("path");
+            };
+        };
+    };
 });
 
 window.addEventListener("load", function () {
