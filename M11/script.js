@@ -57,14 +57,11 @@ class Cell {
     setState (state) {
         if (["visited", "blank", "wall", "start", "end", "path"].includes(state)) {
             this.state = state;
-        } else {
-            console.log("setState() method at Cell " + this.element.id + ": '" + state + "' is not a valid state.");
         };
         this.element.className = this.state;
     };
 
     transform () {
-        console.log("Transforming cell " + this.element.id)
         if (this.state === "wall") {
             this.setState("blank");
         } else if (!["start", "end"].includes(this.state)) {
@@ -87,7 +84,8 @@ function getPoint (index) {
 };
 
 function getIndex (point) {
-    return (point[1] * dimensions[0]) + point[0] - 1;
+    // And this too is not working as it should. it should be x value (point[0]) + (y value (point[1]) * x-dim (dimensions[0])). ok why is there a -1. NO ERRORS BUT SOMETHING DELAYED. no issues with this anymore ggs.
+    return (point[1] * dimensions[0]) + point[0];
 };
 
 Array.prototype.isEqualTo = function (other) {
@@ -133,11 +131,12 @@ function genTable () {
             grid[i].neighbors.push(i - 1);
         };
         if (getPoint(i)[1] === 0) {
-            grid[i]
+            grid[i].neighbors.push(i + dimensions[0]);
         } else if (getPoint(i)[1] === dimensions[1] - 1) {
-
+            grid[i].neighbors.push(i - dimensions[0]);
         } else {
-
+            grid[i].neighbors.push(i + dimensions[0]);
+            grid[i].neighbors.push(i - dimensions[0]);
         }
     };
     renderTable();
@@ -152,20 +151,24 @@ let algorithms = {
         q.insert(getIndex(startPos)); // Queue holds the index.
         while (!q.isEmpty()) {
             current = q.extract(); // an index
-            if (getPoint(current) === endPos) {
+            if (getPoint(current).isEqualTo(endPos)) {
                 break;
             };
             for (var i of grid[current].neighbors) { // iterates through a list (i is part of the list)
                 if (!visited[i] && grid[i].state !== "wall") {
-                    visited[i] = true; grid[i].setState = "visited"
+                    visited[i] = true;
+                    if (grid[i].state === "blank") {
+                        grid[i].setState("visited");
+                    };
                     grid[i].parent = current;
                     q.insert(i);
                 };
             };
         };
-        while (getPoint(current) != startPos) {
-            path.push(current);
+        path.push(current);
+        while (!getPoint(current).isEqualTo(startPos)) {
             current = grid[current].parent;
+            path.push(current);
         };
         return path;
     },
@@ -181,16 +184,19 @@ let algorithms = {
         f = new Array(grid.length).fill(Infinity);
         f[getIndex(startPos)] = h(startPos);
         let path = []; let current;
-        while (!q.length > 0) {
+        while (q.length > 0) {
             q.sort(function (a, b) {return a - b;});
             current = q[0];
-            if (getPoint(current) === endPos) {
+            if (getPoint(current).isEqualTo(endPos)) {
                 break;
             };
             q.shift(); // Remove the current cell
             for (var i of grid[current].neighbors) {
                 if (g[current] + 1 < g[i] && grid[i].state !== "wall") {
-                    grid[i].parent = current; grid[i].setState("visited");
+                    grid[i].parent = current;
+                    if (grid[i].state === "blank") {
+                        grid[i].setState("visited");
+                    };
                     g[i] = g[current] + 1;
                     f[i] = g[current] + h(i) + 1;
                     if (!q.includes(i)) {
@@ -199,9 +205,9 @@ let algorithms = {
                 };
             };
         };
-        while (current.parent) {
+        while (!getPoint(current).isEqualTo(startPos)) {
             path.push(current);
-            current = current.parent;
+            current = grid[current].parent;
         };
         return path;
     },
@@ -227,69 +233,76 @@ var e = {
 // -- EVENT LISTENERS --
 
 e.sx.addEventListener("change", function () {
-    if (this.value > dimensions[0]) {
+    if (Number(this.value) > dimensions[0] - 1) {
         this.value = dimensions[0];
-    } else if (this.value < 1) {
-        this.value = 1;
+    } else if (Number(this.value) < 0) {
+        this.value = 0;
     };
-    grid[getIndex(startPos)].setState("empty");
-    startPos[0] = this.value;
+    grid[getIndex(startPos)].setState("blank");
+    startPos[0] = Number(this.value);
     grid[getIndex(startPos)].setState("start");
 });
 
 e.sy.addEventListener("change", function () {
-    if (this.value > dimensions[1]) {
+    if (Number(this.value) > dimensions[1] - 1) {
         this.value = dimensions[1];
-    } else if (this.value < 1) {
-        this.value = 1;
+    } else if (Number(this.value) < 0) {
+        this.value = 0;
     };
-    grid[getIndex(startPos)].setState("empty");
-    startPos[1] = this.value;
+    grid[getIndex(startPos)].setState("blank");
+    startPos[1] = Number(this.value);
     grid[getIndex(startPos)].setState("start");
 });
 
 e.ex.addEventListener("change", function () {
-    console.log(this.value, dimensions);
-    if (this.value > dimensions[0]) {
-        this.value = dimensions[0];
-    } else if (this.value < 1) {
-        this.value = 1;
+    if (Number(this.value) > dimensions[0] - 1) {
+        this.value = dimensions[0] - 1;
+    } else if (Number(this.value) < 0) {
+        this.value = 0;
     };
-    grid[getIndex(endPos)].setState("empty");
-    endPos[0] = this.value;
+    grid[getIndex(endPos)].setState("blank");
+    endPos[0] = Number(this.value);
     grid[getIndex(endPos)].setState("end");
 });
 
 e.ey.addEventListener("change", function () {
-    if (this.value > dimensions[1]) {
-        this.value = dimensions[1];
-    } else if (this.value < 1) {
-        this.value = 1;
+    if (Number(this.value) > dimensions[1] - 1) {
+        this.value = dimensions[1] - 1;
+    } else if (Number(this.value) < 0) {
+        this.value = 0;
     };
-    grid[getIndex(endPos)].setState("empty");
-    endPos[1] = this.value;
+    grid[getIndex(endPos)].setState("blank");
+    endPos[1] = Number(this.value);
     grid[getIndex(endPos)].setState("end");
 });
 
 e.dx.addEventListener("change", function () {
-    if (this.value > 32) {
+    if (Number(this.value) > 32) {
         this.value = 32;
-    } else if (this.value < 1) {
+    } else if (Number(this.value) < 1) {
         this.value = 1;
     };
-    dimensions[0] = this.value;
+    dimensions[0] = Number(this.value);
+    genTable();
 });
 
 e.dy.addEventListener("change", function () {
-    if (this.value > 32) {
+    if (Number(this.value) > 32) {
         this.value = 32;
-    } else if (this.value < 1) {
+    } else if (Number(this.value) < 1) {
         this.value = 1;
     };
-    dimensions[1] = this.value;
+    dimensions[1] = Number(this.value);
+    genTable();
 });
 
 document.getElementById("generate").addEventListener("click", function () {
+    // Clear prior visited / path cells, allowing for redos
+    for (let i = 0; i < grid.length; i++) {
+        if (["visited", "path"].includes(grid[i].state)) {
+            grid[i].setState("blank");
+        };
+    };
     // Error checking first. Actual code will run IF and ONLY IF no errors arise. Erroneous inputs will be marked
     // with <element>.style.backgroundColor = maroon;
     // LIST OF ERROR CONDITIONS
@@ -297,26 +310,25 @@ document.getElementById("generate").addEventListener("click", function () {
     // 2. End is out of bounds
     // 3. Start is out of bounds
     // 4. Dimensions are too small (1 x 1)
-    // Due to constraints of the design, this is some very ugly code.
     [e.sx.style.backgroundColor, e.sy.style.backgroundColor, e.ex.style.backgroundColor, e.ey.style.backgroundColor, e.dx.style.backgroundColor, e.dy.style.backgroundColor] = ["inherit", "inherit", "inherit", "inherit", "inherit", "inherit"];
     let error = false;
     if (startPos.isEqualTo(endPos) && endPos.isEqualTo(startPos)) {
         error = true;
         [e.sx.style.backgroundColor, e.sy.style.backgroundColor, e.ex.style.backgroundColor, e.ey.style.backgroundColor] = ["darkred", "darkred", "darkred", "darkred"];
     };
-    if (endPos[0] > dimensions[0]) {
+    if (endPos[0] > dimensions[0] - 1) {
         error = true;
         e.ex.style.backgroundColor = "darkred";
     };
-    if (endPos[1] > dimensions[1]) {
+    if (endPos[1] > dimensions[1] - 1) {
         error = true;
         e.ey.style.backgroundColor = "darkred";
     };
-    if (startPos[0] > dimensions[0]) {
+    if (startPos[0] > dimensions[0] - 1) {
         error = true;
         e.sx.style.backgroundColor = "darkred";
     };
-    if (startPos[1] > dimensions[1]) {
+    if (startPos[1] > dimensions[1] - 1) {
         error = true;
         e.sy.style.backgroundColor = "darkred";
     };
@@ -335,9 +347,9 @@ document.getElementById("generate").addEventListener("click", function () {
                 algo = i.value;
             };
         };
-        let path = algorithms[algo]();
+        let path = algorithms[algo](); // issue here now?
         for (var i of path) {
-            if (grid[i].state === "visited") {
+            if (grid[i].state === "visited" && getPoint(path[0]).isEqualTo(endPos)) {
                 grid[i].setState("path");
             };
         };

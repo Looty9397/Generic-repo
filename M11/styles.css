@@ -35,7 +35,7 @@ button {
 }
 
 .visited {
-    background-color: gold;
+    background-color: #442;
 }
 
 .wall {
@@ -51,7 +51,7 @@ button {
 }
 
 .path {
-    background-color: goldenrod;
+    background-color: #662;
 }
 
 .smallInput {
