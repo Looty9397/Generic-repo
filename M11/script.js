@@ -44,14 +44,25 @@ class Cell {
     constructor (id) {
         this.state = "blank";
         this.neighbors = [];
+        this.parent = new Number(null); // For use in pathfinding algorithms. Is an index. getPoint()
         this.element = document.createElement("td");
         this.element.id = "C" + id;
         this.element.addEventListener("click", function () {
             grid[Number(this.id.slice(1))].transform();
             renderTable();
         });
+        this.element.addEventListener("mouseover", function () {
+            document.getElementById("info").innerHTML = "&nbsp;(" + getPoint(this.id.slice(1))[0] + ", " + getPoint(this.id.slice(1))[1] + ")";
+            switch (grid[Number(this.id.slice(1))].state) {
+                case "blank": break;
+                case "wall": document.getElementById("info").innerHTML += ": Wall"; break;
+                case "start": document.getElementById("info").innerHTML += ": Start Point"; break;
+                case "end": document.getElementById("info").innerHTML += ": End Point"; break;
+                case "path": document.getElementById("info").innerHTML += ": Path"; break;
+                case "visited": document.getElementById("info").innerHTML += ": Visited"; break;
+            };
+        });
         this.element.className = this.state;
-        this.parent = new Number(null); // For use in pathfinding algorithms. Is an index. getPoint()
     };
 
     setState (state) {
@@ -124,6 +135,7 @@ function genTable () {
     for (let i = 0; i < (dimensions[0] * dimensions[1]); i++) {
         if (getPoint(i)[0] === 0) {
             grid[i].neighbors.push(i + 1);
+            grid[i].element.innerHTML = getPoint(i)[1];
         } else if (getPoint(i)[0] === dimensions[0] - 1) {
             grid[i].neighbors.push(i - 1);
         } else {
@@ -132,6 +144,7 @@ function genTable () {
         };
         if (getPoint(i)[1] === 0) {
             grid[i].neighbors.push(i + dimensions[0]);
+            grid[i].element.innerHTML = getPoint(i)[0];
         } else if (getPoint(i)[1] === dimensions[1] - 1) {
             grid[i].neighbors.push(i - dimensions[0]);
         } else {
@@ -175,7 +188,7 @@ let algorithms = {
     astar: function () { // A* | Code made using Wikipedia pseudocode as a reference.
         // Plan for heuristic: pythagorean theorem. sqrt(x-dist^2 + y-dist^2)
         function h (point) {
-            return Math.sqrt(Math.pow(Math.abs(endPos[0] - getPoint(point)[0]), 2) + Math.pow(Math.abs(endPos[1] - getPoint(point)[1]), 2)) + (Math.random * 0.01); // IN MATH NOTATION: √(|endx - pointx|^2 + |endy - pointy|^2)
+            return Math.sqrt(Math.pow(Math.abs(endPos[0] - getPoint(point)[0]), 2) + Math.pow(Math.abs(endPos[1] - getPoint(point)[1]), 2)); // IN MATH NOTATION: √(|endx - pointx|^2 + |endy - pointy|^2)
             // "+ (Math.random * 0.01)"
         };
         q = [getIndex(startPos)]; // Queueueueueueueueueueueueueueue but not but also yes but actually not
@@ -185,7 +198,8 @@ let algorithms = {
         f[getIndex(startPos)] = h(startPos);
         let path = []; let current;
         while (q.length > 0) {
-            q.sort(function (a, b) {return a - b;});
+
+            q.sort(function (a, b) {return f[a] - f[b];});
             current = q[0];
             if (getPoint(current).isEqualTo(endPos)) {
                 break;
@@ -234,7 +248,7 @@ var e = {
 
 e.sx.addEventListener("change", function () {
     if (Number(this.value) > dimensions[0] - 1) {
-        this.value = dimensions[0];
+        this.value = dimensions[0] - 1;
     } else if (Number(this.value) < 0) {
         this.value = 0;
     };
@@ -245,7 +259,7 @@ e.sx.addEventListener("change", function () {
 
 e.sy.addEventListener("change", function () {
     if (Number(this.value) > dimensions[1] - 1) {
-        this.value = dimensions[1];
+        this.value = dimensions[1] - 1;
     } else if (Number(this.value) < 0) {
         this.value = 0;
     };
@@ -277,8 +291,8 @@ e.ey.addEventListener("change", function () {
 });
 
 e.dx.addEventListener("change", function () {
-    if (Number(this.value) > 32) {
-        this.value = 32;
+    if (Number(this.value) > Math.floor((window.innerWidth - 20) / 24)) {
+        this.value = Math.floor((window.innerWidth - 20) / 24);
     } else if (Number(this.value) < 1) {
         this.value = 1;
     };
@@ -287,8 +301,8 @@ e.dx.addEventListener("change", function () {
 });
 
 e.dy.addEventListener("change", function () {
-    if (Number(this.value) > 32) {
-        this.value = 32;
+    if (Number(this.value) > Math.floor((window.innerHeight - 200) / 24)) {
+        this.value = Math.floor((window.innerHeight - 200) / 24);
     } else if (Number(this.value) < 1) {
         this.value = 1;
     };
@@ -304,11 +318,11 @@ document.getElementById("generate").addEventListener("click", function () {
         };
     };
     // Error checking first. Actual code will run IF and ONLY IF no errors arise. Erroneous inputs will be marked
-    // with <element>.style.backgroundColor = maroon;
-    // LIST OF ERROR CONDITIONS
-    // 1. Start and End are the same
-    // 2. End is out of bounds
-    // 3. Start is out of bounds
+    // with <element>.style.backgroundColor = darkred;
+    // -- LIST OF ERROR CONDITIONS --
+    // 1. Start and End points are the same
+    // 2. End point is out of bounds
+    // 3. Start point is out of bounds
     // 4. Dimensions are too small (1 x 1)
     [e.sx.style.backgroundColor, e.sy.style.backgroundColor, e.ex.style.backgroundColor, e.ey.style.backgroundColor, e.dx.style.backgroundColor, e.dy.style.backgroundColor] = ["inherit", "inherit", "inherit", "inherit", "inherit", "inherit"];
     let error = false;
@@ -347,7 +361,7 @@ document.getElementById("generate").addEventListener("click", function () {
                 algo = i.value;
             };
         };
-        let path = algorithms[algo](); // issue here now?
+        let path = algorithms[algo](); // issue here now? ig no
         for (var i of path) {
             if (grid[i].state === "visited" && getPoint(path[0]).isEqualTo(endPos)) {
                 grid[i].setState("path");
@@ -357,5 +371,20 @@ document.getElementById("generate").addEventListener("click", function () {
 });
 
 window.addEventListener("load", function () {
+    e.dx.value = Math.floor(Math.random() * (Math.floor((window.innerWidth - 20) / 24) - 4)) + 4;
+    e.dy.value = Math.floor(Math.random() * (Math.floor((window.innerHeight - 200) / 24) - 4)) + 4;
+    dimensions[0] = Number(e.dx.value);
+    dimensions[1] = Number(e.dy.value);
+    let start = -1; let end = -1;
+    while (start === end) {
+        start = Math.floor(Math.random() * dimensions[0] * dimensions[1]);
+        end = Math.floor(Math.random() * dimensions[0] * dimensions[1]);
+    };
+    startPos = getPoint(start);
+    endPos = getPoint(end);
+    e.sx.value = startPos[0];
+    e.sy.value = startPos[1];
+    e.ex.value = endPos[0];
+    e.ey.value = endPos[1];
     genTable();
 });

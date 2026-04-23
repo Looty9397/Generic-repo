@@ -1,6 +1,8 @@
 td {
     width: 20px;
     height:20px;
+    text-align: left;
+    vertical-align: top;
 }
 
 table {
@@ -57,4 +59,10 @@ button {
 .smallInput {
     width: 5ch;
 }
+
+button:hover {
+    background-color: #444;
+}
+
+
 

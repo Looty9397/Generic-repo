@@ -14,24 +14,19 @@
             <p>Start Point</p>
             <p>End Point</p>
             <p>Dimensions</p>
+            <p>Algorithm</p>
         </div>
         <div id="coords" style="display: inline-block;">
-            <p>(<input type="number" placeholder="x" class="smallInput" id="sx" value="0">,
-            <input type="number" placeholder="y" class="smallInput" id="sy" value="0">)</p>
-            <p>(<input type="number" placeholder="x" class="smallInput" id="ex" value="9">,
-            <input type="number" placeholder="y" class="smallInput" id="ey" value="9">)</p>
-            <p><input type="number" placeholder="width" class="smallInput" id="dx" value="10"> x
-            <input type="number" placeholder="height" class="smallInput" id="dy" value="10"></p>
+            <p>(<input type="number" placeholder="x" class="smallInput" id="sx">,
+            <input type="number" placeholder="y" class="smallInput" id="sy">)</p>
+            <p>(<input type="number" placeholder="x" class="smallInput" id="ex">,
+            <input type="number" placeholder="y" class="smallInput" id="ey">)</p>
+            <p><input type="number" placeholder="w" class="smallInput" id="dx"> x
+            <input type="number" placeholder="h" class="smallInput" id="dy"></p>
+            <label><input type="radio" name="algo" value="bfs" checked="true">BFS</label>
+            <label><input type="radio" name="algo" value="astar">A*</label>
         </div><br/>
-        <div id="algo">
-            <label>
-                <input type="radio" name="algo" value="bfs" checked="true">BFS
-            </label>
-            <label>
-                <input type="radio" name="algo" value="astar">A*
-            </label>
-        </div>
-        <button id="generate">Generate Path</button>
+        <button id="generate">Generate Path</button><span id="info"></span>
     </div>
 </body>
 </html>
