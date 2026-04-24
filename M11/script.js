@@ -95,7 +95,9 @@ function getPoint (index) {
 };
 
 function getIndex (point) {
-    // And this too is not working as it should. it should be x value (point[0]) + (y value (point[1]) * x-dim (dimensions[0])). ok why is there a -1. NO ERRORS BUT SOMETHING DELAYED. no issues with this anymore ggs.
+    // And this too is not working as it should. it should be x value (point[0]) + (y value (point[1]) *
+    // x-dim (dimensions[0])). ok why is there a -1. NO ERRORS BUT SOMETHING DELAYED.
+    // no issues with this anymore ggs.
     return (point[1] * dimensions[0]) + point[0];
 };
 
@@ -124,6 +126,7 @@ function renderTable () {
 };
 
 function genTable () {
+    grid = new Array(dimensions[0] * dimensions[1]);
     for (let i = 0; i < (dimensions[0] * dimensions[1]); i++) {
         grid[i] = new Cell(i);
         if (getPoint(i).isEqualTo(startPos)) {
@@ -160,7 +163,7 @@ let algorithms = {
         let visited = new Array(grid.length).fill(false);
         visited[getIndex(startPos)] = true;
         let path = []; let current;
-        q = new queue();
+        let q = new queue();
         q.insert(getIndex(startPos)); // Queue holds the index.
         while (!q.isEmpty()) {
             current = q.extract(); // an index
@@ -233,7 +236,7 @@ var graph = document.getElementById("graph");
 var dimensions = [10, 10]; // [<x>, <y>]
 var startPos = [0, 0]; // [<x>, <y>]
 var endPos = [9, 9]; // [<x>, <y>]
-var grid = new Array(dimensions[0] * dimensions[1]); // A list of Cells. Not separated like [y[x]] for ease of access in algorithms.
+var grid = new Array(); // A list of Cells. Not separated like [y[x]] for ease of access in algorithms.
 
 var e = {
     sx: document.getElementById("sx"),
@@ -387,4 +390,69 @@ window.addEventListener("load", function () {
     e.ex.value = endPos[0];
     e.ey.value = endPos[1];
     genTable();
+});
+
+document.getElementById("randomS").addEventListener("click", function () {
+    let start = getIndex(startPos);
+    while (start === getIndex(endPos) || getPoint(start).isEqualTo(startPos)) {
+        start = Math.floor(Math.random() * dimensions[0] * dimensions[1]);
+    };
+    grid[getIndex(startPos)].setState("blank");
+    startPos = getPoint(start);
+    grid[getIndex(startPos)].setState("start");
+    e.sx.value = startPos[0];
+    e.sy.value = startPos[1];
+});
+
+document.getElementById("randomE").addEventListener("click", function () {
+    let end = getIndex(endPos);
+    while (end === getIndex(startPos) || getPoint(end).isEqualTo(endPos)) {
+        end = Math.floor(Math.random() * dimensions[0] * dimensions[1]);
+    };
+    grid[getIndex(endPos)].setState("blank");
+    endPos = getPoint(end);
+    grid[getIndex(endPos)].setState("end");
+    e.ex.value = endPos[0];
+    e.ey.value = endPos[1];
+});
+
+document.getElementById("randomD").addEventListener("click", function () {
+    e.dx.value = Math.floor(Math.random() * (Math.floor((window.innerWidth - 20) / 24) - 4)) + 4;
+    e.dy.value = Math.floor(Math.random() * (Math.floor((window.innerHeight - 200) / 24) - 4)) + 4;
+    dimensions[0] = Number(e.dx.value);
+    dimensions[1] = Number(e.dy.value);
+    if (startPos[1] > dimensions[1] - 1 || startPos[0] > dimensions[0] - 1) {
+        let start = getIndex(startPos);
+        while (start === getIndex(endPos) || getPoint(start).isEqualTo(startPos)) {
+            start = Math.floor(Math.random() * dimensions[0] * dimensions[1]);
+        };
+        grid[getIndex(startPos)].setState("blank");
+        startPos = getPoint(start);
+        grid[getIndex(startPos)].setState("start");
+        e.sx.value = startPos[0];
+        e.sy.value = startPos[1];
+    
+    };
+    if (endPos[1] > dimensions[1] - 1 || endPos[0] > dimensions[0] - 1) {
+        let end = getIndex(endPos);
+        while (end === getIndex(startPos) || getPoint(end).isEqualTo(endPos)) {
+            end = Math.floor(Math.random() * dimensions[0] * dimensions[1]);
+        };
+        grid[getIndex(endPos)].setState("blank");
+        endPos = getPoint(end);
+        grid[getIndex(endPos)].setState("end");
+        e.ex.value = endPos[0];
+        e.ey.value = endPos[1];
+    };
+    genTable();
+});
+
+document.getElementById("randomA").addEventListener("click", function () {
+    if (Math.random() < 0.5) {
+        document.getElementById("astar").checked = true;
+        document.getElementById("bfs").checked = false;
+    } else {
+        document.getElementById("bfs").checked = true;
+        document.getElementById("astar").checked = false;
+    }
 });

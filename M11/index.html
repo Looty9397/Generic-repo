@@ -10,23 +10,29 @@
 <body>
     <table id="graph"></table>
     <div id="options">
-        <div id="labels" style="display: inline-block;">
+        <div style="display: inline-block;">
             <p>Start Point</p>
             <p>End Point</p>
             <p>Dimensions</p>
             <p>Algorithm</p>
         </div>
-        <div id="coords" style="display: inline-block;">
+        <div style="display: inline-block;">
             <p>(<input type="number" placeholder="x" class="smallInput" id="sx">,
             <input type="number" placeholder="y" class="smallInput" id="sy">)</p>
             <p>(<input type="number" placeholder="x" class="smallInput" id="ex">,
             <input type="number" placeholder="y" class="smallInput" id="ey">)</p>
             <p><input type="number" placeholder="w" class="smallInput" id="dx"> x
             <input type="number" placeholder="h" class="smallInput" id="dy"></p>
-            <label><input type="radio" name="algo" value="bfs" checked="true">BFS</label>
-            <label><input type="radio" name="algo" value="astar">A*</label>
+            <label><input type="radio" name="algo" value="bfs" id="bfs" checked="true">BFS</label>
+            <label><input type="radio" name="algo" value="astar" id="astar">A*</label>
+        </div>
+        <div style="display: inline-block;">
+            <p><button id="randomS">Random</button></p>
+            <p><button id="randomE">Random</button></p>
+            <p><button id="randomD">Random</button></p>
+            <p><button id="randomA">Random</button></p>
         </div><br/>
-        <button id="generate">Generate Path</button><span id="info"></span>
+        <button id="generate">Generate Path</button></button><span id="info"></span>
     </div>
 </body>
 </html>
