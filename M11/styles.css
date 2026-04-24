@@ -36,8 +36,16 @@ button {
     background-color: #222;
 }
 
+.blank:hover {
+    background-color: #444;
+}
+
 .visited {
-    background-color: #442;
+    background-color: #552;
+}
+
+.visited:hover {
+    background-color: #772;
 }
 
 .wall {
@@ -53,10 +61,10 @@ button {
 }
 
 .path {
-    background-color: #662;
+    background-color: #882;
 }
 
-.smallInput {
+input[type="number"] {
     width: 5ch;
 }
 
