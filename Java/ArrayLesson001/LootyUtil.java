@@ -1,4 +1,4 @@
-import java.util.*;
+// Author: Looty9397
 
 public class LootyUtil {
     // printArray == Arrays.toString()
