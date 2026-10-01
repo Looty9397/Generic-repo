@@ -32,9 +32,20 @@ public class Player extends Character {
             }
         }
 
-        this.inventory.add(new Coin (totalMoney));
+        this.inventory.add(new Coin(totalMoney));
 
         return totalMoney;
+    }
+
+    public void setMoney (int newVal) {
+        for (int i = 0; i < this.inventory.size(); i++) {
+            if (this.inventory.get(i) instanceof Coin) {
+                this.inventory.remove(i);
+                i--;
+            }
+        }
+
+        this.inventory.add(new Coin(newVal));
     }
 
     public int getInvValue () {
@@ -45,5 +56,13 @@ public class Player extends Character {
         }
 
         return totalValue;
+    }
+
+    public void removeFromInv (int index) {
+        this.inventory.remove(index);
+    }
+
+    public ArrayList<Item> getInv () {
+        return this.inventory;
     }
 }
