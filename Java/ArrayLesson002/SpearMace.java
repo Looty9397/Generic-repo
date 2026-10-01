@@ -4,6 +4,7 @@ import java.util.*;
 
 public class SpearMace {
     public static void main(String[] args) {
+        /*
         Scanner in = new Scanner(System.in);
         int bN = 0;
 
@@ -31,5 +32,13 @@ public class SpearMace {
         System.out.printf("Total of %d items in your inventory\n", total);
 
         in.close();
+        */
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                int ranNum = (int)(Math.random() * 3000);
+                System.out.printf("%d: %s\n", ranNum, Item.toRoman(ranNum));
+            }
+        }
     }
 }
