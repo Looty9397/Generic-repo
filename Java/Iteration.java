@@ -46,4 +46,8 @@ public class Iteration {
 
         return total;
     }
+
+    //public static q4 () {
+
+    //}
 }
