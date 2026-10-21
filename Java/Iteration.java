@@ -1,5 +1,5 @@
 
-public class Test {
+public class Iteration {
     public static void main(String[] args) {
         int[][] a = new int[(int)(Math.random() * 10) + 1][(int)(Math.random() * 10) + 1];
 
