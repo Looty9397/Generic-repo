@@ -1,4 +1,4 @@
-import java.util.*;
+/*import java.util.*;
 
 public class Player extends Character {
     private ArrayList<Item> inventory;
@@ -65,4 +65,4 @@ public class Player extends Character {
     public ArrayList<Item> getInv () {
         return this.inventory;
     }
-}
+}*/
