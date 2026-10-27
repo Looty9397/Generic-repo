@@ -1,18 +1,19 @@
 public class Test {
     public static void main(String[] args) {
-        // e
-        Test test = new test2();
-        test.hi();
-    }
+        GamePlayer q = new GamePlayer();
+        GamePlayer p = new BonusPlayer();
 
-    public String hi () {
-        return "hi";
+        System.out.println(((BonusPlayer)p).bonus());
+        // This line is a runtime error.
+        System.out.println(((BonusPlayer)q).bonus());
     }
 }
 
-class test2 extends Test {
-    @Override 
-    public String hi () {
-        return "hello";
-    }
+class GamePlayer {
+    public int points () {return 10;}
+}
+
+class BonusPlayer extends GamePlayer {
+    public int points () {return 15;}
+    public int bonus () {return 5;}
 }

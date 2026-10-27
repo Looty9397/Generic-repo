@@ -1,4 +1,4 @@
-import java.util.*;
+/*import java.util.*;
 
 public class Character {
     private String gender;
@@ -55,3 +55,4 @@ public class Character {
         return String.format("%s (%s)\n  STR: %d\n  SPD: %d\n  HP:  %d", this.name, this.gender, this.str, this.spd, this.hp);
     }
 }
+*/

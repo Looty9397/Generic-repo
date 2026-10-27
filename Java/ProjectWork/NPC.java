@@ -1,4 +1,4 @@
-import java.util.*;
+/*import java.util.*;
 
 public class NPC extends Character {
     private String[] dialogue;
@@ -24,3 +24,4 @@ public class NPC extends Character {
         return "NPC " + super.toString();
     }
 }
+*/
