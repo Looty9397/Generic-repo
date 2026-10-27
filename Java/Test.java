@@ -19,9 +19,9 @@ public class Test {
         return this.topic.substring(0, 3);
     }
 
-    public void addMinutes (int amt) {
-        if (amt > 0 && this.minutes + amt <= 120) {
-            this.minutes += amt;
+    public void addMinutes (int extra) {
+        if (extra > 0 && this.minutes + extra <= 120) {
+            this.minutes += extra;
         }
     }
 }
