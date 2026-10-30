@@ -1,27 +1,23 @@
+
 public class Test {
-    private String topic;
-    private int minutes;
+    public static void main(String[] args) {
+        int[] one = {5, 2, 7};
+        int[] two = {5, 0, 7};
+        boolean isPositive = true;
 
-    public Test (String startTopic, int startMinutes) {
-        this.topic = startTopic;
-        this.minutes = startMinutes;
-    }
-
-    public Test () {
-        this("Math", 0);
-    }
-
-    public boolean isLongSession () {
-        return this.minutes >= 45;
-    }
-
-    public String tag () {
-        return this.topic.substring(0, 3);
-    }
-
-    public void addMinutes (int extra) {
-        if (extra > 0 && this.minutes + extra <= 120) {
-            this.minutes += extra;
+        for (int i: one) {
+            if (!(i > 0)) {
+                isPositive = false;
+            }
         }
+
+        System.out.println(isPositive);
+
+        for (int i: two) {
+            if (!(i > 0)) {
+                isPositive = false;
+            }
+        }
+        System.out.println(isPositive);
     }
 }
