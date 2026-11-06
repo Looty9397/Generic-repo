@@ -19,11 +19,11 @@ public class Project {
         try (Scanner input = new Scanner(new File(filename))) {
             while (input.hasNext()) {
                 String next = input.next();
-                if (isPalindrome(next)) {
+                if (palindromes.contains(next)) {
                     total++;
-                    if (!palindromes.contains(next)) {
-                        palindromes.add(next);
-                    }
+                } else if (isPalindrome(next)) {
+                    total++;
+                    palindromes.add(next);
                     // No need to do anything else, as we are counting
                     // No need to call input.next() anywhere else either, as the condition pulls it for me
                 }
