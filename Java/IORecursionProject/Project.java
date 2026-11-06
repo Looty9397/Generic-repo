@@ -1,6 +1,6 @@
 /*
  * Author: Looty9397 (and no one else)
- * Count amount of palindromes in a text file 
+ * Count amount of palindromes in a text file
  **/
 
 import java.io.*;
@@ -8,13 +8,26 @@ import java.util.*;
 
 public class Project {
     public static void main(String[] args) {
-        String filename = "words.txt";
+        String filename = "words_all.txt"; // default file
+        if (args.length > 0) {
+            filename = args[0];
+        } // Allow users to customize the file at the command line.
+
         int total = 0;
+        int totalDistinct = 0;
+        ArrayList<String> palindromes = new ArrayList<>();
 
         try (Scanner input = new Scanner(new File(filename))) {
             while (input.hasNext()) {
-                if (isPalindrome(input.next())) {
+                String next = input.next();
+                if (isPalindrome(next)) {
                     total++;
+                    if (!palindromes.contains(next)) {
+                        totalDistinct += 1;
+                        palindromes.add(next);
+                    }
+                    // No need to do anything else, as we are counting
+                    // No need to call input.next() anywhere else either, as the condition pulls it for me
                 }
             }
         } catch (IOException ex) {
@@ -22,6 +35,7 @@ public class Project {
         }
 
         System.out.printf("There are a total of %d palindromes in %s\n", total, filename);
+        System.out.printf("There are a total of %d distinct palindromes in %s\n", totalDistinct, filename);
     }
 
     /**
