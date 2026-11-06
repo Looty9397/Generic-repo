@@ -1,5 +1,5 @@
 /*
- * Author: Looty9397
+ * Author: Looty9397 (and no one else)
  * Count amount of palindromes in a text file 
  **/
 
@@ -8,8 +8,7 @@ import java.util.*;
 
 public class Project {
     public static void main(String[] args) {
-        // Dummy value for the filename, for now
-        String filename = "./Java/nov2folder/words.txt";
+        String filename = "words.txt";
         int total = 0;
 
         try (Scanner input = new Scanner(new File(filename))) {
