@@ -14,7 +14,6 @@ public class Project {
         } // Allow users to customize the file at the command line.
 
         int total = 0;
-        int totalDistinct = 0;
         ArrayList<String> palindromes = new ArrayList<>();
 
         try (Scanner input = new Scanner(new File(filename))) {
@@ -23,7 +22,6 @@ public class Project {
                 if (isPalindrome(next)) {
                     total++;
                     if (!palindromes.contains(next)) {
-                        totalDistinct += 1;
                         palindromes.add(next);
                     }
                     // No need to do anything else, as we are counting
@@ -35,7 +33,7 @@ public class Project {
         }
 
         System.out.printf("There are a total of %d palindromes in %s\n", total, filename);
-        System.out.printf("There are a total of %d distinct palindromes in %s\n", totalDistinct, filename);
+        System.out.printf("There are a total of %d distinct palindromes in %s\n", palindromes.size(), filename);
     }
 
     /**
